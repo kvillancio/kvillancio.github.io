@@ -96,6 +96,23 @@
     50% { opacity: 0.9; }
   }
 
+  /* Mobile friendly adjustments */
+  @media (max-width: 600px) {
+    .left-text, .right-text {
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    .name-script {
+      width: 110vw;
+    }
+
+    .name-mono-text {
+      font-size: 16px;
+      letter-spacing: 1px;
+    }
+  }
+
   /* Added: make the wrapper links around left-text/right-text clickable */
   .left-text-link,
   .right-text-link {
@@ -146,7 +163,6 @@
 
   <div class="name-mono-text">Siena Villancio-Wolter</div>
  
-
 
 </body>
 </html>
