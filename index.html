@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siena Villancio-Wolter</title>
+<link rel="stylesheet" href="https://fontlibrary.org/face/anka-coder" type="text/css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+  }
+
+  body {
+    background: #0a1420;
+  }
+
+  /* Scrolling background photos, stacked vertically */
+  .photo-stack {
+    position: relative;
+    width: 100%;
+    z-index: 1;
+  }
+
+  .photo-stack img {
+    display: block;
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+  }
+
+  /* Name script, fixed and centered in the viewport at all times */
+  .name-script {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(80vw, 900px);
+    z-index: 3;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 18px rgba(0, 0, 0, 0.55));
+  }
+
+  /* Static text above/below the script, also fixed and centered */
+  .left-text,
+  .right-text {
+    position: fixed;
+    top: 5%;
+    transform: translateX(-50%);
+    z-index: 3;
+    color: #ffffff;
+    font-family: AnkaCoder, monospace;
+    letter-spacing: 3px;
+    /*text-transform: uppercase; */
+    pointer-events: none;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  }
+ 
+  .left-text {
+    left: 10%;
+    font-size: 20px;
+    text-align: left;
+  }
+ 
+  .right-text {
+    right: 0%;
+    font-size: 20px;
+    text-align: right;
+  }
+  .name-script img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Monospace name text */
+  .name-mono-text{
+    position: fixed;
+    top: 70%;
+    left: 50%;
+    font-size: 24px;
+    text-align: center;
+    transform: translateX(-50%);
+    z-index: 3;
+    color: #ffffff;
+    font-family: AnkaCoder, monospace;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 0.9; }
+  }
+
+  /* Added: make the wrapper links around left-text/right-text clickable */
+  .left-text-link,
+  .right-text-link {
+    position: fixed;
+    top: 5%;
+    z-index: 4;
+    pointer-events: auto;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .left-text-link {
+    left: 10%;
+    transform: translateX(-50%);
+  }
+
+  .right-text-link {
+    right: 0%;
+    transform: translateX(-50%);
+  }
+
+  .left-text-link .left-text,
+  .right-text-link .right-text {
+    position: static;
+    transform: none;
+  }
+
+</style>
+</head>
+<body>
+
+  <div class="photo-stack">
+    <img src="images/anthurium.png" alt="Lake at midday">
+    <img src="images/grad_shoes.png" alt="Lake at dusk">
+  </div>
+
+  <div class="name-script">
+    <img src="images/name_script_white.png" alt="Siena Villancio-Wolter">
+  </div>
+
+  <a href="engineering.html" class="left-text-link">
+  <div class="left-text">engineering</div>
+  </a>
+
+  <a href="creative.html" class="right-text-link">
+  <div class="right-text">creative</div>
+  </a>
+
+  <div class="name-mono-text">Siena Villancio-Wolter</div>
+ 
+
+
+</body>
+</html>
