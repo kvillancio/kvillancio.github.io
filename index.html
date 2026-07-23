@@ -14,7 +14,7 @@
   }
 
   body {
-    background: #0a1420;
+    background: #ffffff;
   }
 
   /* Scrolling background photos, stacked vertically */
@@ -22,6 +22,7 @@
     position: relative;
     width: 100%;
     z-index: 1;
+    margin-top: 5%;
   }
 
   .photo-stack img {
@@ -37,10 +38,9 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: min(110vw, 1200px);
+    width: min(200vw, 2500px);
     z-index: 3;
     pointer-events: none;
-    filter: drop-shadow(0 2px 18px rgba(0, 0, 0, 0.55));
   }
 
   /* Static text above/below the script, also fixed and centered */
@@ -50,12 +50,16 @@
     top: 5%;
     transform: translateX(-50%);
     z-index: 3;
-    color: #ffffff;
+    color: #000000;
+    transition: color 0.15s ease;
     font-family: AnkaCoder, monospace;
     letter-spacing: 3px;
     /*text-transform: uppercase; */
     pointer-events: none;
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  }
+
+  .on-photo {
+    color: #ffffff !important;
   }
  
   .left-text {
@@ -78,7 +82,7 @@
   /* Monospace name text */
   .name-mono-text{
     position: fixed;
-    top: 70%;
+    top: 95%;
     left: 50%;
     font-size: 24px;
     text-align: center;
@@ -104,11 +108,11 @@
     }
 
     .name-script {
-      width: 600vw;
+      width: 500vw;
     }
 
     .name-mono-text {
-      font-size: 14px;
+      font-size: 16px;
       letter-spacing: 1px;
     }
   }
@@ -117,7 +121,7 @@
   .left-text-link,
   .right-text-link {
     position: fixed;
-    top: 5%;
+    top: 3%;
     z-index: 4;
     pointer-events: auto;
     text-decoration: none;
@@ -125,12 +129,12 @@
   }
 
   .left-text-link {
-    left: 10%;
+    left: 5%;
     transform: translateX(-50%);
   }
 
   .right-text-link {
-    right: 0%;
+    right: -3%;
     transform: translateX(-50%);
   }
 
@@ -140,8 +144,150 @@
     transform: none;
   }
 
+  /* Dropdown wrapper replaces the old plain right-text-link anchor */
+  .menu-wrapper {
+    position: fixed;
+    top: 3%;
+    right: -3%;
+    transform: translateX(-50%);
+    z-index: 4;
+    text-align: right;
+  }
+
+  #menuToggle {
+    display: inline-block;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #000000;
+    transition: color 0.15s ease;
+    font-family: AnkaCoder, monospace;
+    font-size: 20px;
+    letter-spacing: 3px;
+  }
+
+  /* Dropdown list, animated open/close instead of a hard display toggle */
+  .menu-dropdown {
+    list-style: none;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.3s ease;
+  }
+
+  .menu-dropdown.open {
+    max-height: 200px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .menu-dropdown a {
+    color: #000000;
+    transition: color 0.15s ease, transform 0.2s ease, opacity 0.2s ease;
+    font-family: AnkaCoder, monospace;
+    letter-spacing: 3px;
+    font-size: 16px;
+    text-decoration: none;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  .menu-dropdown.open a {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .menu-dropdown.open a:nth-child(1) {
+    transition-delay: 0.05s;
+  }
+
+  .menu-dropdown.open a:nth-child(2) {
+    transition-delay: 0.12s;
+  }
+
+  #menuToggle {
+    transition: color 0.15s ease, transform 0.2s ease;
+  }
+
+  #menuToggle.open {
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 600px) {
+    #menuToggle {
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    .menu-dropdown a {
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+  }
+
 </style>
 </head>
+
+<script>
+    function isOverPhoto(el) {
+      if (!el) return false;
+      const rect = el.getBoundingClientRect();
+      const centerY = rect.top + rect.height / 2;
+      const photos = document.querySelectorAll('.photo-stack img');
+      for (const photo of photos) {
+        const prect = photo.getBoundingClientRect();
+        if (centerY >= prect.top && centerY <= prect.bottom) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function updateNavColors() {
+      const navElements = [
+        document.querySelector('.left-text'),
+        document.querySelector('.right-text'),
+        document.getElementById('menuToggle'),
+        ...document.querySelectorAll('.menu-dropdown a')
+      ];
+
+      navElements.forEach(el => {
+        if (!el) return;
+        el.classList.toggle('on-photo', isOverPhoto(el));
+      });
+    }
+
+    function toggleMenu(event) {
+      event.stopPropagation();
+      document.getElementById('portfoliosMenu').classList.toggle('open');
+      document.getElementById('menuToggle').classList.toggle('open');
+    }
+
+    // Close the dropdown when clicking anywhere else on the page
+    document.addEventListener('click', (event) => {
+      const menu = document.getElementById('portfoliosMenu');
+      const toggle = document.getElementById('menuToggle');
+      if (menu && !menu.contains(event.target) && event.target !== toggle) {
+        menu.classList.remove('open');
+        toggle.classList.remove('open');
+      }
+    });
+
+    window.addEventListener('scroll', updateNavColors, { passive: true });
+    window.addEventListener('resize', updateNavColors);
+    window.addEventListener('load', updateNavColors);
+</script>
+
 <body>
 
   <div class="photo-stack">
@@ -153,16 +299,19 @@
     <img src="images/name_script_white.png" alt="Siena Villancio-Wolter">
   </div>
 
-  <a href="engineering.html" class="left-text-link">
-  <div class="left-text">engineering</div>
+  <a href="about.html" class="left-text-link">
+  <div class="left-text">ABOUT</div>
   </a>
 
-  <a href="creative.html" class="right-text-link">
-  <div class="right-text">creative</div>
-  </a>
+  <div class="menu-wrapper">
+    <button id="menuToggle" onclick="toggleMenu(event)">PORTFOLIOS</button>
+    <ul class="menu-dropdown" id="portfoliosMenu">
+      <li><a href="engineering.html">ENGINEERING</a></li>
+      <li><a href="fashion.html">FASHION</a></li>
+    </ul>
+  </div>
 
-  <div class="name-mono-text">Siena Villancio-Wolter</div>
- 
+  <div class="name-mono-text">[Siena Villancio-Wolter]</div>
 
 </body>
 </html>
