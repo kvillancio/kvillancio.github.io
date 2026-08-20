@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siena Villancio-Wolter</title>
+<link rel="stylesheet" href="https://fontlibrary.org/face/anka-coder" type="text/css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+  }
+
+  body {
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Top navigation */
+  .top-nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 60px;
+    padding: 40px 60px 0 40px;
+  }
+
+  .top-nav a {
+    color: #000000;
+    text-decoration: none;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+  }
+
+  .top-nav a:hover {
+    opacity: 0.6;
+  }
+
+  /* Footer contact bar */
+  .contact-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 24px 40px;
+    border-top: 1px solid #e5e5e5;
+    background: #ffffff;
+    z-index: 10;
+  }
+
+  .contact-footer span {
+    font-size: 16px;
+    color: #000000;
+    letter-spacing: 0.3px;
+  }
+
+  .contact-footer a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000;
+    text-decoration: none;
+  }
+
+  .contact-footer svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  /* Mobile friendly adjustments */
+  @media (max-width: 600px) {
+    .top-nav {
+      gap: 24px;
+      padding: 24px 24px 0 24px;
+    }
+
+    .top-nav a,
+    #menuToggle {
+      font-size: 14px;
+    }
+
+    .menu-dropdown a {
+      font-size: 12px;
+    }
+
+    .contact-footer {
+      padding: 16px 24px;
+    }
+  }
+
+  /* ---------------- About section ---------------- */
+  .about-section {
+    scroll-margin-top: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 0px 20px;
+    display: flex;
+    gap: 48px;
+    align-items: flex-start;
+  }
+
+  .about-photo-circle {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #eaeaea;
+    flex-shrink: 0;
+  }
+
+  .about-text-block p {
+    font-size: 18px;
+    line-height: 1.7;
+    letter-spacing: 0.5px;
+    text-align: justify;
+  }
+
+  @media (max-width: 700px) {
+    .about-section {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 40px 24px 10px;
+    }
+
+    .about-text-block p {
+      text-align: left;
+    }
+  }
+
+  /* ---------------- Portfolios section ---------------- */
+  .portfolios-section {
+    scroll-margin-top: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0px 160px;
+  }
+
+  .portfolio-category {
+    scroll-margin-top: 24px;
+    margin-bottom: 56px;
+  }
+
+  .portfolio-category-heading {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-bottom: 24px;
+  }
+
+  .project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Simple link-style pill button (used for fashion, which opens a new page) */
+  .project-card-simple {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    background: #efefef;
+    border-radius: 20px;
+    padding: 24px 28px;
+    text-decoration: none;
+    color: #000000;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+
+  .project-card-simple:hover {
+    background: #e7e7e7;
+  }
+
+  .project-card-simple:active {
+    transform: scale(0.997);
+  }
+
+  .project-card-simple .card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .project-card-simple .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin: 0;
+  }
+
+  .project-card-simple .card-desc {
+    font-size: 15px;
+    line-height: 1.5;
+    letter-spacing: 0.2px;
+    color: #5a5a5a;
+    -webkit-line-clamp: 3;
+  }
+
+  .project-card-simple .chevron {
+    font-size: 20px;
+    color: #7a7a7a;
+    flex-shrink: 0;
+    margin-left: 24px;
+  }
+
+  .misc-placeholder {
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    color: #9a9a9a;
+    font-style: italic;
+  }
+
+  /* Expandable project cards (engineering) */
+  .project-card {
+    background: #efefef;
+    border-radius: 20px;
+    padding: 24px;
+    cursor: pointer;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  }
+
+  .project-card:hover {
+    background: #e7e7e7;
+  }
+
+  .project-card:active {
+    transform: scale(0.997);
+  }
+
+  .project-card.expanded {
+    background: #e9e9e9;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  .card-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  /* Preview photo shown on every card (summary row). Grows to match the
+     expanded-photo size when the card opens, so it lines up with the
+     rest of the photo column instead of staying small next to them. */
+  .card-photo-thumb {
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 12px;
+    background: #d8d8d8;
+    display: block;
+    flex-shrink: 0;
+    transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1), height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .project-card.expanded .card-summary .card-photo-thumb {
+    width: 200px;
+    height: 200px;
+  }
+
+  /* Extra photos revealed on expand start at the same larger size right
+     away, so the moment the card is open every photo matches. */
+  .card-expand-photos .card-photo-thumb {
+    width: 400px;
+    height: 400px;
+  }
+
+  .card-text-block {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .card-summary .chevron {
+    font-size: 20px;
+    color: #7a7a7a;
+    flex-shrink: 0;
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  .project-card.expanded .card-summary .chevron {
+    transform: rotate(90deg);
+  }
+
+  .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-bottom: 10px;
+  }
+
+  .card-desc {
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: 0.2px;
+    color: #5a5a5a;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-expand-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .project-card.expanded .card-expand-wrapper {
+    grid-template-rows: 1fr;
+  }
+
+  .card-expand-inner {
+    overflow: hidden;
+  }
+
+  .card-expand-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    padding-top: 24px;
+    margin-top: 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.3s ease, transform 0.35s ease;
+  }
+
+  .project-card.expanded .card-expand-content {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.1s;
+  }
+
+  /* Left-hand column: the preview photo plus two more, all the same
+     size, stacked above one another next to the expanded text. */
+  .card-expand-photos {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  .card-expand-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .card-desc-extended {
+    font-size: 16px;
+    line-height: 1.7;
+    letter-spacing: 0.2px;
+    color: #1a1a1a;
+    text-align: justify;
+  }
+
+  .expand-indicator {
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    color: #7a7a7a;
+    margin-top: 14px;
+  }
+
+  @media (max-width: 700px) {
+    .portfolios-section {
+      padding: 20px 24px 140px;
+    }
+
+    .card-summary {
+      gap: 16px;
+    }
+
+    .card-desc {
+      -webkit-line-clamp: 4;
+    }
+
+    .card-photo-thumb {
+      width: 84px;
+      height: 84px;
+      border-radius: 10px;
+    }
+
+    .project-card.expanded .card-summary .card-photo-thumb {
+      width: 110px;
+      height: 110px;
+    }
+
+    .card-expand-photos .card-photo-thumb {
+      width: 110px;
+      height: 110px;
+      border-radius: 10px;
+    }
+
+    .card-expand-content {
+      flex-direction: column;
+    }
+
+    .card-expand-photos {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+</style>
+</head>
+
+<script>
+  // Expand/collapse project cards. Only one card can be open at a time,
+  // so opening a new card automatically closes whichever one was open.
+  function toggleCard(card) {
+    const wasExpanded = card.classList.contains('expanded');
+
+    document.querySelectorAll('.project-card.expanded').forEach((openCard) => {
+      openCard.classList.remove('expanded');
+    });
+
+    if (!wasExpanded) {
+      card.classList.add('expanded');
+      scrollCardIntoView(card);
+    }
+  }
+
+  // Once a card finishes expanding, scroll just enough so the whole
+  // expanded card is visible (or, if it's taller than the viewport,
+  // so its top settles near the top of the screen).
+  function scrollCardIntoView(card) {
+    const wrapper = card.querySelector('.card-expand-wrapper');
+    if (!wrapper) return;
+
+    const onDone = (event) => {
+      if (event && event.propertyName !== 'grid-template-rows') return;
+      wrapper.removeEventListener('transitionend', onDone);
+
+      const topPadding = 0;
+      const bottomPadding = 100;
+      const rect = card.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      let scrollDelta = 0;
+      if (rect.height > viewportHeight - topPadding - bottomPadding) {
+        scrollDelta = rect.top - topPadding;
+      } else if (rect.bottom > viewportHeight - bottomPadding) {
+        scrollDelta = rect.bottom - (viewportHeight - bottomPadding);
+      } else if (rect.top < topPadding) {
+        scrollDelta = rect.top - topPadding;
+      }
+
+      if (scrollDelta !== 0) {
+        window.scrollBy({ top: scrollDelta, behavior: 'smooth' });
+      }
+    };
+
+    wrapper.addEventListener('transitionend', onDone);
+  }
+</script>
+
+<body>
+
+  <nav class="top-nav">
+    <a href="#about">about</a>
+    <a href="#engineering">engineering</a>
+    <a href="#fashion">fashion</a>
+    <a href="#misc">misc</a>
+    <a href="gallery.html">gallery</a>
+  </nav>
+
+  <!-- ---------------- About ---------------- -->
+  <section class="about-section" id="about">
+    <img class="about-photo-circle" src="images/headshot.png" alt="Siena Villancio-Wolter">
+    <div class="about-text-block">
+      <p>Hi I’m Siena! I am an engineer and fashion designer originally from Southern California and South Florida. 
+        I earned my B.S. in Biomedical Engineering from the University of Florida and my M.S. in Electrical and Computer Engineering
+        from the University of Washington. My work spans robotics, biomechanics, implantable medical devices, accessible technology, 
+        prostheses, and a specialized focus on powered lower-limb exoskeletons. Throughout my career, my guiding interest has been and 
+        continues to be human-centered design. In addition to engineering, I am also a self-taught fashion designer. I first joined 
+        the fashion community through modeling and quickly fell in love with design. My work has been showcased in two runway shows 
+        and I look forward to continuing to grow in community and in my art.
+      </p>
+      <br>
+      <p>Below is an archive of some of my engineering, fashion, and miscellaneous projects. Feel free to explore 
+        my portfolio and reach out [karensiena@gmail.com] if you have any questions, want to chat, or are interested in 
+        collaborating on future projects! </p>
+      <br>
+    </div>
+  </section>
+
+  <!-- ---------------- Portfolios ---------------- -->
+  <section class="portfolios-section" id="portfolios">
+
+    <!-- Engineering: expandable cards, stay on this page -->
+    <div class="portfolio-category" id="engineering">
+      <div class="portfolio-category-heading">ENGINEERING</div>
+      <div class="project-list">
+
+        <div class="project-card" onclick="toggleCard(this)">
+          <div class="card-summary">
+            <img class="card-photo-thumb" src="images/dephy.png" alt="title goes here">
+            <div class="card-text-block">
+              <div class="card-title">Muscle-controlled ankle exoskeleton</div>
+              <p class="card-desc">Evaluating a powered ankle exoskeleton with proportional myoelectric control in both 
+                lab and real world settings</p>
+            </div>
+            <span class="chevron">&gt;</span>
+          </div>
+          <div class="card-expand-wrapper">
+            <div class="card-expand-inner">
+              <div class="card-expand-content">
+                <div class="card-expand-photos">
+                </div>
+                <div class="card-expand-text">
+                <p class="card-desc-extended">Abstract: Lower limb robotic exoskeletons are often studied in the context of 
+                  steady state treadmill walking in a laboratory environment. However, the end goal for exoskeletons is to 
+                  be used in real world, complex environments. To reach the point that exoskeletons are openly adopted into 
+                  our everyday lives, we need to understand how the human and robot interact outside of a laboratory. Metabolic 
+                  cost is often viewed as a gold standard metric for measuring exoskeleton performance but is rarely used to 
+                  evaluate performance at non steady state walking outside of a laboratory. In this study, we tested the effects 
+                  of robotic ankle exoskeletons under proportional myoelectric control on the cost of transport of walking both 
+                  inside on a treadmill and outside overground. We hypothesized that walking with the exoskeletons would lead to 
+                  a lower cost of transport compared to walking without them both on a treadmill and outside. We saw no significant 
+                  increases or decreases in cost of transport or exoskeleton mechanics when walking with the exoskeletons compared 
+                  to walking without them both on a treadmill and outside. We saw a strong negative correlation between walking 
+                  speed and cost of transport when walking with and without the exoskeletons. In the future, research should 
+                  consider how performing more difficult tasks, such as incline and loaded walking, affects the cost of transport 
+                  while walking with and without robotic ankle exoskeletons. The value of this study to the literature is that it 
+                  emphasizes the importance of both hardware dynamics and controller design towards reducing metabolic cost of 
+                  transport with robotic ankle exoskeletons. When comparing our results to other studies using the same hardware 
+                  with different controllers or very similar controllers with different hardware, there are a wide range of 
+                  outcomes as to metabolic benefit.</p>
+                <br>
+                <p class="card-desc-extended">Hybart, R., Villancio-Wolter, K. S., & Ferris, D. P. (2023). 
+                  Metabolic cost of walking with electromechanical ankle exoskeletons under proportional 
+                  myoelectric control on a treadmill and outdoors. PeerJ, 11, e15775. <a href="https://doi.org/10.7717/peerj.15775" target="_blank">https://doi.org/10.7717/peerj.15775</a></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card" onclick="toggleCard(this)">
+          <div class="card-summary">
+            <img class="card-photo-thumb" src="images/heatmap_grid_adobe.png" alt="title goes here">
+            <div class="card-text-block">
+              <div class="card-title">Exoskeleton control parameter optimization</div>
+              <p class="card-desc">Using linear mixed models to characterize the effects of exoskeleton control parameters on various user outcomes</p>
+            </div>
+            <span class="chevron">&gt;</span>
+          </div>
+          <div class="card-expand-wrapper">
+            <div class="card-expand-inner">
+              <div class="card-expand-content">
+                <div class="card-expand-photos">
+                </div>
+                <div class="card-expand-text">
+                <p class="card-desc-extended">Abstract (paper in progress): Lower limb exoskeletons have a wide array of 
+                  applications in mobility assistance and rehabilitation. Many exoskeleton control strategies exist and each 
+                  is defined by a set of controller-specific parameters. However, within a given control strategy, we do not 
+                  yet know how different exoskeleton control parameters affect features of human gait. To bridge this gap, we 
+                  conducted a secondary analysis of an open source dataset (Poggensee et al., 2021). This dataset consisted of 
+                  15 participants in 3 training groups walking on a treadmill with bilateral powered ankle exoskeletons over 
+                  6 days. Exoskeleton assistance was determined by an event-triggered torque profile defined by four parameters: 
+                  (1) peak torque magnitude, (2) peak torque time, (3) rise time, and (4) fall time. Each training group 
+                  experienced a different approach to optimizing exoskeleton assistance. We explored the effects of each control 
+                  parameter on human gait features (maximum dorsiflexion and plantarflexion angles, metabolic cost, and stride time) 
+                  using linear mixed effects models (LMEMs). We also modeled the effects of different optimization approaches, 
+                  experience, individual differences, and between-parameter interactions. If we can predict how control parameters 
+                  affect different features of human gait, we can design controllers to achieve more precise goals, which can be 
+                  leveraged for applications like user-customization and rehabilitation. </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card" onclick="toggleCard(this)">
+          <div class="card-summary">
+            <img class="card-photo-thumb" src="images/imu_config.png" alt="title goes here">
+            <div class="card-text-block">
+              <div class="card-title">Inverse kinematics sensor pipeline comparison</div>
+              <p class="card-desc">Comparing inverse kinematics calculations using motion capture and inertial measurement units with varying placement configurations</p>
+            </div>
+            <span class="chevron">&gt;</span>
+          </div>
+          <div class="card-expand-wrapper">
+            <div class="card-expand-inner">
+              <div class="card-expand-content">
+                <div class="card-expand-photos">
+                  <img class="card-photo-thumb" src="images/markers.png" alt="title goes here">
+                  <img class="card-photo-thumb" src="images/skeleton.png" alt="title goes here">
+                </div>
+                <div class="card-expand-text">
+                <p class="card-desc-extended">Abstract: Inertial measurement units (IMUs) are wearable sensors that can be used 
+                  for portable human gait analysis (e.g. joint angles). This has many potential applications, from clinical gait 
+                  assessments to outdoor research studies. Our study aims to investigate how walking speed and IMU placement on 
+                  the body effects joint angle calculations during gait. In this study, 4 healthy young adults wore 10 IMUs 
+                  (APDM Opals) on their lower body along with full-body motion capture markers. The participants walked on a 
+                  treadmill at 4 different speeds for 2 minutes each. We calculated their joint angles (hip, knee, and ankle) 
+                  with the motion capture data (Visual 3D) and IMU data (OpenSense inverse kinematics). We compared the calculated 
+                  joint angles in the sagittal plane at different walking speeds and with different IMU placement configurations. 
+                  From preliminary results, we observed that IMU placement on the foot does have an effect on ankle angle calculations. 
+                  Additionally, the IMU and motion capture joint angles had fewer regions of significant differences at 0.2 m/s compared 
+                  to 1.0 m/s. For future directions, we will process a larger sample of participants and more walking speeds to build a 
+                  more representative dataset. We will also process data from a stroke study to investigate IMU gait analysis with a 
+                  clinical population.</p>
+                <br>
+                <p class="card-desc-extended"><a href="https://ufdc.ufl.edu/AA00098426/00001/citation" target="_blank">Link to thesis</a></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card" onclick="toggleCard(this)">
+          <div class="card-summary">
+            <img class="card-photo-thumb" src="images/jordy.png" alt="title goes here">
+            <div class="card-text-block">
+              <div class="card-title">Canine prosthetic limb design and development</div>
+              <p class="card-desc">Building low-cost prostheses for dogs with limb differences</p>
+            </div>
+            <span class="chevron">&gt;</span>
+          </div>
+          <div class="card-expand-wrapper">
+            <div class="card-expand-inner">
+              <div class="card-expand-content">
+                <div class="card-expand-photos">
+                  <img class="card-photo-thumb" src="images/pawsteam.JPG" alt="title goes here">
+                  <img class="card-photo-thumb" src="images/jordyfoot.png" alt="title goes here">
+                </div>
+                <div class="card-expand-text">
+                <p class="card-desc-extended">At the University of Florida, I led an engineering design team called
+                  Pawsthetics. We designed and built 3D-printed prostheses for dogs with varying limb differences.
+                  I attribute this team to so many of my skills as an engineer and designer and am so grateful for all
+                  of my team members. Visit <a href="https://www.instagram.com/ufpawsthetics/@ufpawsthetics" target="_blank">@ufpawsthetics</a> 
+                  on Instagram to see some of our work and keep up with the team!
+                </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card" onclick="toggleCard(this)">
+          <div class="card-summary">
+            <img class="card-photo-thumb" src="images/dataviz.png" alt="title goes here">
+            <div class="card-text-block">
+              <div class="card-title">Interactive large scale data exploration tool</div>
+              <p class="card-desc">Data visualization project</p>
+            </div>
+            <span class="chevron">&gt;</span>
+          </div>
+          <div class="card-expand-wrapper">
+            <div class="card-expand-inner">
+              <div class="card-expand-content">
+                <div class="card-expand-photos">
+                </div>
+                <div class="card-expand-text">
+                <p class="card-desc-extended">This website is the result of an open-ended project I built with Ally Clarke 
+                  for a CSE data visualization class at the University of Washington [CSE512 taught by Jeffrey Heer]. It uses an
+                  open-source dataset from <a href="https://doi.org/10.1126/scirobotics.abf1078" target="_blank">this paper</a>
+                  that contains human biomechanics data during treadmill walking with a powered ankle exoskeleton. We designed our
+                  website to be a tool for large-scale data exploration, allowing users to interact visually with the data in 
+                  multiple modalities.</p>
+                <br>
+                <a href="https://effect-of-exoskeleton-on-ankle-biomechanics-49469d.pages.cs.washington.edu/" target="_blank">Link to project page</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card" onclick="toggleCard(this)">
+          <div class="card-summary">
+            <img class="card-photo-thumb" src="images/gobabygo.png" alt="title goes here">
+            <div class="card-text-block">
+              <div class="card-title">Accessible tech adaptations</div>
+              <p class="card-desc">Adapting toys, jeeps, and other things</p>
+            </div>
+            <span class="chevron">&gt;</span>
+          </div>
+          <div class="card-expand-wrapper">
+            <div class="card-expand-inner">
+              <div class="card-expand-content">
+                <div class="card-expand-photos">
+                  <img class="card-photo-thumb" src="images/grippers.png" alt="title goes here">
+                  <img class="card-photo-thumb" src="images/cactustoy.png" alt="title goes here">
+                  <img class="card-photo-thumb" src="images/switches.png" alt="title goes here">
+                </div>
+                <div class="card-expand-text">
+                <p class="card-desc-extended">
+                  <a href="https://faculty.eng.ufl.edu/grip/" target="_blank">Generational Relief in Prosthetics (GRiP)</a>
+                  <br> 
+                  <a href="https://www.huskyadapt.me.uw.edu/HuskyADAPT" target="_blank">HuskyADAPT</a>
+                  <br>
+                  <a href="https://gobabygo.rehab.washington.edu/GoBabyGo" target="_blank">GoBabyGo</a>
+                </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card" onclick="toggleCard(this)">
+          <div class="card-summary">
+            <img class="card-photo-thumb" src="images/robot_art.png" alt="title goes here">
+            <div class="card-text-block">
+              <div class="card-title">Paper circuit art lesson!</div>
+              <p class="card-desc">Teaching introductory circuit concepts to elementary school students through art</p>
+            </div>
+            <span class="chevron">&gt;</span>
+          </div>
+          <div class="card-expand-wrapper">
+            <div class="card-expand-inner">
+              <div class="card-expand-content">
+                <div class="card-expand-photos">
+                  <video class="card-photo-thumb" src="images/IMG_3902.mov" alt="title goes here" autoplay muted loop></video>
+                  <img class="card-photo-thumb" src="images/circuit_labeled.png" alt="title goes here">
+                </div>
+                <div class="card-expand-text">
+                <p class="card-desc-extended">During grad school, I had the opportunity to design and lead a lesson 
+                  plan for an after-school STEM program at a local elementary school in Seattle. I knew I wanted to 
+                  create a lesson anchored in art both because I believe art and engineering go hand in hand 
+                  and because I noticed how much more engaged the students were during activities that 
+                  allowed for creative ownership. I also knew I wanted to do a hands-on circuit activity because after
+                  six years of university-level engineering courses, I still owe my understanding of shorting a circuit to a
+                  stack of foam blocks, a pack of LEDs, and a roll of conductive tape. Tangible, large scale activities like 
+                  this are a great way to teach circuit fundamentals to students at any level and I'm so grateful
+                  I got the opportunity to bring this one to the classroom.</p>
+                <br>
+                <p class="card-desc-extended">I designed this activity based on <a href="https://www.sciencebuddies.org/stem-activities/paper-circuit" target="_blank">this paper circuit guide.</a>
+                  To introduce an additional circuit component, I modified the switch mechanism to magnetic reed switches. To close the circuit, students had to make
+                  an accessory to their art piece [in my demo, a heart for my robot] and attach a magnet to the back of it. When they
+                  hold the magnetic piece over the reed switch, the circuit closes and the LEDs illuminate.</p>
+                <br>
+                <p class="card-desc-extended">Happy circuit building!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card" onclick="toggleCard(this)">
+          <div class="card-summary">
+            <img class="card-photo-thumb" src="images/glove.png" alt="title goes here">
+            <div class="card-text-block">
+              <div class="card-title">Gesture-based sensor glove</div>
+              <p class="card-desc">Pressure sensor glove designed for augmentative and alternative communication (AAC)</p>
+            </div>
+            <span class="chevron">&gt;</span>
+          </div>
+          <div class="card-expand-wrapper">
+            <div class="card-expand-inner">
+              <div class="card-expand-content">
+                <div class="card-expand-photos">
+                  <img class="card-photo-thumb" src="images/glovecircuit.png" alt="title goes here">
+                  <img class="card-photo-thumb" src="images/glovemap.png" alt="title goes here">
+                  <img class="card-photo-thumb" src="images/gloveuix.png" alt="title goes here">
+                </div>
+                <div class="card-expand-text">
+                <p class="card-desc-extended"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Fashion: pill buttons that open dedicated pages -->
+    <div class="portfolio-category" id="fashion">
+      <div class="portfolio-category-heading">FASHION</div>
+      <div class="project-list">
+
+        <a class="project-card-simple" href="fall25.html">
+          <img class="card-photo-thumb" src="images/tidepool_bathroom1_square.png" alt="">
+          <div class="card-text">
+            <span class="card-title">RUNWAY FALL 2025</span>
+            <p class="card-desc">SWAMP GIRLS</p>
+          </div>
+          <span class="chevron">&gt;</span>
+        </a>
+
+        <a class="project-card-simple" href="spring26.html">
+          <img class="card-photo-thumb" src="images/barong_5.png" alt="">
+          <div class="card-text">
+            <span class="card-title">RUNWAY SPRING 2026</span>
+            <p class="card-desc">PILIPINA</p>
+          </div>
+          <span class="chevron">&gt;</span>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Misc: placeholder for now -->
+    <div class="portfolio-category" id="misc">
+      <div class="portfolio-category-heading">MISC</div>
+      <div class="project-list">
+        <a class="project-card-simple" href="color-accessibility-checker.html">
+          <img class="card-photo-thumb" src="images/color_combo.png" alt="">
+          <div class="card-text">
+            <span class="card-title">Accessible color scheme generator</span>
+            <p class="card-desc">Built my own accessible color combo generator because I do this regularly and didn't love the existing tools</p>
+          </div>
+          <span class="chevron">&gt;</span>
+        </a>
+      </div>
+    </div>
+
+  </section>
+
+  <footer class="contact-footer">
+    <span>karensiena@gmail.com</span>
+    <a href="https://www.linkedin.com/in/siena-villancio-wolter/" aria-label="LinkedIn">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="4" fill="#000000"/>
+        <path d="M7.2 9.6H4.8V19.2H7.2V9.6Z" fill="#ffffff"/>
+        <path d="M6 8.4C6.795 8.4 7.44 7.755 7.44 6.96C7.44 6.165 6.795 5.52 6 5.52C5.205 5.52 4.56 6.165 4.56 6.96C4.56 7.755 5.205 8.4 6 8.4Z" fill="#ffffff"/>
+        <path d="M11.76 9.6H9.36V19.2H11.76V14.28C11.76 12.84 12.72 12.12 13.68 12.12C14.4 12.12 15.12 12.6 15.12 14.28V19.2H17.52V13.68C17.52 10.32 15.6 9.36 13.92 9.36C12.6 9.36 11.88 10.08 11.76 10.32V9.6Z" fill="#ffffff"/>
+      </svg>
+    </a>
+    <a href="https://github.com/kvillancio" aria-label="GitHub">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.58 2 12.2C2 16.68 4.87 20.47 8.84 21.8C9.34 21.9 9.52 21.58 9.52 21.31C9.52 21.07 9.51 20.19 9.51 19.27C6.73 19.88 6.14 18.05 6.14 18.05C5.68 16.87 5.03 16.55 5.03 16.55C4.13 15.93 5.1 15.94 5.1 15.94C6.1 16.01 6.63 16.98 6.63 16.98C7.5 18.51 8.93 18.06 9.5 17.81C9.59 17.16 9.85 16.72 10.13 16.47C7.9 16.22 5.56 15.35 5.56 11.47C5.56 10.36 5.96 9.44 6.65 8.73C6.54 8.48 6.19 7.42 6.75 6.02C6.75 6.02 7.63 5.74 9.5 7.02C10.29 6.8 11.15 6.68 12 6.68C12.85 6.68 13.71 6.8 14.5 7.02C16.37 5.74 17.25 6.02 17.25 6.02C17.81 7.42 17.46 8.48 17.35 8.73C18.04 9.44 18.44 10.36 18.44 11.47C18.44 15.36 16.1 16.22 13.86 16.46C14.22 16.77 14.54 17.37 14.54 18.31C14.54 19.65 14.53 20.97 14.53 21.31C14.53 21.58 14.71 21.9 15.22 21.8C19.19 20.46 22.06 16.68 22.06 12.2C22.06 6.58 17.52 2 12 2Z" fill="#000000"/>
+      </svg>
+    </a>
+    <a href="siena_villancio_resume.pdf" target="_blank" style="font-size: 16px; letter-spacing: 0.3px;">resume/cv</a>
+  </footer>
+
+</body>
+</html>

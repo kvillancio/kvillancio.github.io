@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siena Villancio-Wolter</title>
+<link rel="stylesheet" href="https://fontlibrary.org/face/anka-coder" type="text/css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+  }
+
+  body {
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Top navigation */
+  .top-nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 60px;
+    padding: 40px 60px 0 40px;
+  }
+
+  .top-nav a {
+    color: #000000;
+    text-decoration: none;
+    font-size: 26px;
+    letter-spacing: 0.5px;
+  }
+
+  .top-nav a:hover {
+    opacity: 0.6;
+  }
+
+  /* Portfolios dropdown */
+  .menu-wrapper {
+    position: relative;
+    text-align: left;
+  }
+
+  #menuToggle {
+    display: inline-block;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #000000;
+    font-size: 26px;
+    letter-spacing: 0.5px;
+    font-family: inherit;
+    transition: color 0.15s ease, transform 0.2s ease;
+  }
+
+  #menuToggle:hover {
+    opacity: 0.6;
+  }
+
+  #menuToggle.open {
+    transform: translateY(-2px);
+  }
+
+  .menu-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 10px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.3s ease;
+  }
+
+  .menu-dropdown.open {
+    max-height: 200px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .menu-dropdown a {
+    color: #9a9a9a;
+    transition: color 0.15s ease, transform 0.2s ease, opacity 0.2s ease;
+    letter-spacing: 0.5px;
+    font-size: 20px;
+    text-decoration: none;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  .menu-dropdown a:hover {
+    color: #000000;
+  }
+
+  .menu-dropdown.open a {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .menu-dropdown.open a:nth-child(1) {
+    transition-delay: 0.05s;
+  }
+
+  .menu-dropdown.open a:nth-child(2) {
+    transition-delay: 0.12s;
+  }
+
+
+  /* Footer contact bar */
+  .contact-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 24px 40px;
+    border-top: 1px solid #e5e5e5;
+    background: #ffffff;
+    z-index: 10;
+  }
+
+  .contact-footer span {
+    font-size: 16px;
+    color: #000000;
+    letter-spacing: 0.3px;
+  }
+
+  .contact-footer a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000;
+    text-decoration: none;
+  }
+
+  .contact-footer svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  /* Mobile friendly adjustments */
+  @media (max-width: 600px) {
+    .top-nav {
+      gap: 24px;
+      padding: 24px 24px 0 24px;
+    }
+
+    .top-nav a,
+    #menuToggle {
+      font-size: 14px;
+    }
+
+    .menu-dropdown a {
+      font-size: 12px;
+    }
+
+    .name-mono-text {
+      margin-left: 24px;
+      font-size: 16px;
+      margin-top: 8vh;
+    }
+
+    .name-script-horiz {
+      width: 220%;
+      margin-top: 6vh;
+    }
+
+    .contact-footer {
+      padding: 16px 24px;
+    }
+  }
+</style>
+
+<!-- ******NEW CHANGES****** -->
+<style>
+  .portfolio-wrap {
+    padding: 24px 60px 140px 40px;
+  }
+
+  .portfolio-heading {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-bottom: 10px;
+  }
+
+  .portfolio-subheading {
+    font-size: 22px;
+    color: #444444;
+    letter-spacing: 0.3px;
+    margin-bottom: 40px;
+  }
+
+  /* Each project gets its own horizontally-scrolling row of photos */
+  .project-section {
+    margin-bottom: 64px;
+  }
+
+  .project-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .project-title {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-bottom: 24px;
+  }
+
+  .scroll-row-wrapper {
+    position: relative;
+  }
+
+  .scroll-row {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding: 4px 4px 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .scroll-row::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .scroll-row::-webkit-scrollbar-thumb {
+    background: #d4d4d4;
+    border-radius: 4px;
+  }
+
+  .scroll-row img {
+    flex: 0 0 auto;
+    width: 360px;
+    height: 460px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    border-radius: 4px;
+    background: #d8d8d8;
+    scroll-snap-align: start;
+  }
+
+  .scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+    font-size: 18px;
+    line-height: 1;
+    color: #000000;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+
+  .scroll-btn:hover {
+    background: #ffffff;
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .scroll-btn-left {
+    left: 4px;
+  }
+
+  .scroll-btn-right {
+    right: 4px;
+  }
+
+  .project-credit {
+    margin-top: 18px;
+    font-size: 15px;
+    color: #444444;
+    letter-spacing: 0.2px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 700px) {
+    .portfolio-wrap {
+      padding: 40px 24px 120px;
+    }
+
+    .project-title {
+      font-size: 24px;
+    }
+
+    .scroll-row img {
+      width: 200px;
+      height: 255px;
+    }
+
+    .scroll-btn {
+      width: 38px;
+      height: 38px;
+      font-size: 15px;
+    }
+  }
+</style>
+<!-- ******END NEW CHANGES****** -->
+</head>
+
+<script>
+  function toggleMenu(event) {
+    event.stopPropagation();
+    document.getElementById('portfoliosMenu').classList.toggle('open');
+    document.getElementById('menuToggle').classList.toggle('open');
+  }
+
+  // Close the dropdown when clicking anywhere else on the page
+  document.addEventListener('click', (event) => {
+    const menu = document.getElementById('portfoliosMenu');
+    const toggle = document.getElementById('menuToggle');
+    if (menu && !menu.contains(event.target) && event.target !== toggle) {
+      menu.classList.remove('open');
+      toggle.classList.remove('open');
+    }
+  });
+
+  /* ******NEW CHANGES****** */
+  // Scroll a project's photo row left/right when an arrow button is clicked.
+  function scrollRow(button, direction) {
+    const wrapper = button.closest('.scroll-row-wrapper');
+    const row = wrapper.querySelector('.scroll-row');
+    const firstImg = row.querySelector('img');
+    const imgWidth = firstImg ? firstImg.getBoundingClientRect().width : 460;
+    const gap = 24;
+    row.scrollBy({ left: direction * (imgWidth + gap), behavior: 'smooth' });
+  }
+  /* ******END NEW CHANGES****** */
+</script>
+
+<body>
+
+  <nav class="top-nav">
+    <a href="index.html">home</a>
+    <a href="gallery.html">gallery</a>
+  </nav>
+
+  <!-- ******NEW CHANGES****** -->
+  <div class="portfolio-wrap">
+    <!-- <div class="portfolio-heading">FASHION DESIGN PORTFOLIO</div> 
+    <div class="portfolio-subheading"></div> -->
+
+    <section class="project-section">
+      <div class="project-title">SWAMP GIRLS - RUNWAY FALL 2025</div>
+      <div class="scroll-row-wrapper">
+        <button class="scroll-btn scroll-btn-left" onclick="scrollRow(this, -1)" aria-label="Scroll left">&#10094;</button>
+        <div class="scroll-row">
+          <img src="images/tidepool_bathroom1.png" alt="" loading="eager">
+          <img src="images/tidepool_blur.png" alt="" loading="eager">
+          <img src="images/tidepool_back_inside.png" alt="" loading="eager">
+          <img src="images/tidepool_bathroom2.png" alt="" loading="lazy">
+          <img src="images/tidepool_back_outside.png" alt="" loading="lazy">
+          <img src="images/tidepool_front_inside.png" alt="" loading="lazy">
+        </div>
+        <button class="scroll-btn scroll-btn-right" onclick="scrollRow(this, 1)" aria-label="Scroll right">&#10095;</button>
+      </div>
+      <div class="project-credit">[Model: Jeevin Kaur, Photographer: Siena Villancio-Wolter, Designer: Siena Villancio-Wolter]</div>
+    </section>
+
+  </div>
+  <!-- ******END NEW CHANGES****** -->
+
+  <footer class="contact-footer">
+    <span>karensiena@gmail.com</span>
+    <a href="https://www.linkedin.com/in/siena-villancio-wolter/" aria-label="LinkedIn">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="4" fill="#000000"/>
+        <path d="M7.2 9.6H4.8V19.2H7.2V9.6Z" fill="#ffffff"/>
+        <path d="M6 8.4C6.795 8.4 7.44 7.755 7.44 6.96C7.44 6.165 6.795 5.52 6 5.52C5.205 5.52 4.56 6.165 4.56 6.96C4.56 7.755 5.205 8.4 6 8.4Z" fill="#ffffff"/>
+        <path d="M11.76 9.6H9.36V19.2H11.76V14.28C11.76 12.84 12.72 12.12 13.68 12.12C14.4 12.12 15.12 12.6 15.12 14.28V19.2H17.52V13.68C17.52 10.32 15.6 9.36 13.92 9.36C12.6 9.36 11.88 10.08 11.76 10.32V9.6Z" fill="#ffffff"/>
+      </svg>
+    </a>
+    <a href="https://github.com/kvillancio" aria-label="GitHub">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.58 2 12.2C2 16.68 4.87 20.47 8.84 21.8C9.34 21.9 9.52 21.58 9.52 21.31C9.52 21.07 9.51 20.19 9.51 19.27C6.73 19.88 6.14 18.05 6.14 18.05C5.68 16.87 5.03 16.55 5.03 16.55C4.13 15.93 5.1 15.94 5.1 15.94C6.1 16.01 6.63 16.98 6.63 16.98C7.5 18.51 8.93 18.06 9.5 17.81C9.59 17.16 9.85 16.72 10.13 16.47C7.9 16.22 5.56 15.35 5.56 11.47C5.56 10.36 5.96 9.44 6.65 8.73C6.54 8.48 6.19 7.42 6.75 6.02C6.75 6.02 7.63 5.74 9.5 7.02C10.29 6.8 11.15 6.68 12 6.68C12.85 6.68 13.71 6.8 14.5 7.02C16.37 5.74 17.25 6.02 17.25 6.02C17.81 7.42 17.46 8.48 17.35 8.73C18.04 9.44 18.44 10.36 18.44 11.47C18.44 15.36 16.1 16.22 13.86 16.46C14.22 16.77 14.54 17.37 14.54 18.31C14.54 19.65 14.53 20.97 14.53 21.31C14.53 21.58 14.71 21.9 15.22 21.8C19.19 20.46 22.06 16.68 22.06 12.2C22.06 6.58 17.52 2 12 2Z" fill="#000000"/>
+      </svg>
+    </a>
+    <a href="siena_villancio_resume.pdf" target="_blank" style="font-size: 16px; letter-spacing: 0.3px;">resume/cv</a>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siena Villancio-Wolter</title>
+<link rel="stylesheet" href="https://fontlibrary.org/face/anka-coder" type="text/css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+  }
+
+  body {
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Top navigation (matches site) */
+  .top-nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 60px;
+    padding: 40px 60px 0 40px;
+  }
+
+  .top-nav a {
+    color: #000000;
+    text-decoration: none;
+    font-size: 26px;
+    letter-spacing: 0.5px;
+  }
+
+  .top-nav a:hover {
+    opacity: 0.6;
+  }
+
+  .menu-wrapper {
+    position: relative;
+    text-align: left;
+  }
+
+  #menuToggle {
+    display: inline-block;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #000000;
+    font-size: 26px;
+    letter-spacing: 0.5px;
+    font-family: inherit;
+    transition: color 0.15s ease, transform 0.2s ease;
+  }
+
+  #menuToggle:hover {
+    opacity: 0.6;
+  }
+
+  #menuToggle.open {
+    transform: translateY(-2px);
+  }
+
+  .menu-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 10px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.3s ease;
+  }
+
+  .menu-dropdown.open {
+    max-height: 200px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .menu-dropdown a {
+    color: #9a9a9a;
+    transition: color 0.15s ease, transform 0.2s ease, opacity 0.2s ease;
+    letter-spacing: 0.5px;
+    font-size: 20px;
+    text-decoration: none;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  .menu-dropdown a:hover {
+    color: #000000;
+  }
+
+  .menu-dropdown.open a {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .menu-dropdown.open a:nth-child(1) { transition-delay: 0.05s; }
+  .menu-dropdown.open a:nth-child(2) { transition-delay: 0.12s; }
+
+  /* Footer contact bar (matches site) */
+  .contact-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 24px 40px;
+    border-top: 1px solid #e5e5e5;
+    background: #ffffff;
+    z-index: 10;
+  }
+
+  .contact-footer span {
+    font-size: 16px;
+    color: #000000;
+    letter-spacing: 0.3px;
+  }
+
+  .contact-footer a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000;
+    text-decoration: none;
+  }
+
+  .contact-footer svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  @media (max-width: 600px) {
+    .top-nav { gap: 24px; padding: 24px 24px 0 24px; }
+    .top-nav a, #menuToggle { font-size: 14px; }
+    .menu-dropdown a { font-size: 12px; }
+    .contact-footer { padding: 16px 24px; }
+  }
+
+  /* ---------------- Page content ---------------- */
+  .tool-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0px 100px 0px;
+  }
+
+  .tool-heading {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-bottom: 6px;
+  }
+
+  .tool-subheading {
+    font-size: 18px;
+    line-height: 1.55;
+    color: #444444;
+    letter-spacing: 0.2px;
+    max-width: 1200px;
+    margin-bottom: 20px;
+  }
+
+  /* Two picker boxes side by side */
+  .picker-row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .picker-card {
+    background: #efefef;
+    border-radius: 16px;
+    padding: 14px;
+    flex: 0 0 auto;
+    position: relative;
+  }
+
+  .lock-btn {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: #ffffff00;
+    /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15); */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.15s ease, transform 0.15s ease;
+    z-index: 2;
+  }
+
+  .lock-btn:hover {
+    background: #f5f5f5;
+  }
+
+  .lock-btn:active {
+    transform: scale(0.94);
+  }
+
+  .lock-btn:focus-visible {
+    outline: 2px solid #000000;
+    outline-offset: 2px;
+  }
+
+  .lock-btn svg {
+    width: 15px;
+    height: 15px;
+    display: block;
+  }
+
+  .lock-btn .lock-icon-locked {
+    display: none;
+  }
+
+  .picker-card.locked .lock-icon-unlocked {
+    display: none;
+  }
+
+  .picker-card.locked .lock-icon-locked {
+    display: block;
+  }
+
+  .picker-card.locked {
+    box-shadow: 0 0 0 2px #000000 inset;
+  }
+
+  .picker-label {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .picker-label .dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.15);
+    display: inline-block;
+  }
+
+  .sl-square {
+    border-radius: 10px;
+    cursor: crosshair;
+    display: block;
+    touch-action: none;
+  }
+
+  .hue-slider {
+    border-radius: 7px;
+    margin-top: 10px;
+    cursor: pointer;
+    touch-action: none;
+    display: block;
+  }
+
+  .hex-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .hex-row span {
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    color: #7a7a7a;
+  }
+
+  .hex-input {
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #d4d4d4;
+    background: #ffffff;
+    color: #000000;
+    width: 110px;
+  }
+
+  .hex-input:focus {
+    outline: 2px solid #000000;
+    outline-offset: 1px;
+  }
+
+  /* Generate button */
+  .generate-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+
+  .generate-btn {
+    font-family: inherit;
+    font-size: 20px;
+    letter-spacing: 0.4px;
+    color: #ffffff;
+    background: #000000;
+    border: none;
+    border-radius: 999px;
+    padding: 12px 32px;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .generate-btn:hover {
+    opacity: 0.75;
+  }
+
+  .generate-btn:active {
+    transform: scale(0.98);
+  }
+
+  .generate-btn:focus-visible {
+    outline: 2px solid #000000;
+    outline-offset: 3px;
+  }
+
+  /* Results */
+  .results {
+    display: none;
+  }
+
+  .results.visible {
+    display: block;
+  }
+
+  .result-section {
+    margin-bottom: 24px;
+  }
+
+  .result-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-bottom: 10px;
+  }
+
+  .result-title .muted {
+    font-weight: 400;
+    color: #7a7a7a;
+    font-size: 13px;
+    margin-left: 8px;
+  }
+
+  .pair-card {
+    background: #efefef;
+    border-radius: 16px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 18px;
+    align-items: center;
+  }
+
+  .pair-swatch {
+    border-radius: 12px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .pair-swatch .sample-text {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .pair-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pair-hexes {
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .pair-hexes code {
+    background: #ffffff;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 13.5px;
+  }
+
+  .contrast-line {
+    font-size: 15px;
+    letter-spacing: 0.2px;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-left: 8px;
+  }
+
+  .badge.pass { background: #d7f2df; color: #0f6b2c; }
+  .badge.fail { background: #fadada; color: #a11f1f; }
+
+  .cvd-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+
+  .cvd-item {
+    flex: 1 1 140px;
+    min-width: 130px;
+  }
+
+  .cvd-label {
+    font-size: 12.5px;
+    letter-spacing: 0.3px;
+    color: #7a7a7a;
+    margin-bottom: 6px;
+  }
+
+  .cvd-swatch {
+    height: 42px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cvd-swatch span {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  @media (max-width: 700px) {
+    .tool-wrap { padding: 40px 24px 140px; }
+    .pair-card { grid-template-columns: 1fr; }
+    .pair-swatch { height: 110px; }
+  }
+</style>
+</head>
+
+<script>
+  function toggleMenu(event) {
+    event.stopPropagation();
+    document.getElementById('portfoliosMenu').classList.toggle('open');
+    document.getElementById('menuToggle').classList.toggle('open');
+  }
+
+  document.addEventListener('click', (event) => {
+    const menu = document.getElementById('portfoliosMenu');
+    const toggle = document.getElementById('menuToggle');
+    if (menu && !menu.contains(event.target) && event.target !== toggle) {
+      menu.classList.remove('open');
+      toggle.classList.remove('open');
+    }
+  });
+</script>
+
+<body>
+
+  <nav class="top-nav">
+    <a href="index.html">home</a>
+    <a href="gallery.html">gallery</a>
+  </nav>
+
+  <div class="tool-wrap">
+    <div class="tool-heading">COLOR ACCESSIBILITY CHECKER</div>
+    <div class="tool-subheading">
+      Pick two colors below, then generate the closest accessible version of that pair &mdash;
+      adjusted for text contrast (WCAG) and previewed under common forms of color blindness.
+    </div>
+
+    <div class="picker-row">
+      <div class="picker-card" id="cardA">
+        <button class="lock-btn" id="lockA" onclick="toggleLock('A')" aria-label="Lock color A" aria-pressed="false">
+          <svg class="lock-icon-unlocked" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="10" width="14" height="10" rx="2" stroke="#000000" stroke-width="2"/>
+            <path d="M8 10V7a4 4 0 0 1 7.5-2" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <svg class="lock-icon-locked" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="10" width="14" height="10" rx="2" stroke="#000000" stroke-width="2"/>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="picker-label"><span class="dot" id="dotA"></span>Color A</div>
+        <canvas class="sl-square" id="squareA" width="500" height="250"></canvas>
+        <canvas class="hue-slider" id="hueA" width="500" height="16"></canvas>
+        <div class="hex-row">
+          <span>hex</span>
+          <input class="hex-input" id="hexInputA" type="text" value="#3B82F6" maxlength="7">
+        </div>
+      </div>
+
+      <div class="picker-card" id="cardB">
+        <button class="lock-btn" id="lockB" onclick="toggleLock('B')" aria-label="Lock color B" aria-pressed="false">
+          <svg class="lock-icon-unlocked" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="10" width="14" height="10" rx="2" stroke="#000000" stroke-width="2"/>
+            <path d="M8 10V7a4 4 0 0 1 7.5-2" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <svg class="lock-icon-locked" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="10" width="14" height="10" rx="2" stroke="#000000" stroke-width="2"/>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="picker-label"><span class="dot" id="dotB"></span>Color B</div>
+        <canvas class="sl-square" id="squareB" width="500" height="250"></canvas>
+        <canvas class="hue-slider" id="hueB" width="500" height="16"></canvas>
+        <div class="hex-row">
+          <span>hex</span>
+          <input class="hex-input" id="hexInputB" type="text" value="#F97316" maxlength="7">
+        </div>
+      </div>
+    </div>
+
+    <div class="generate-row">
+      <button class="generate-btn" id="generateBtn">generate accessible pair</button>
+    </div>
+
+    <div class="results" id="results">
+
+      <div class="result-section">
+        <div class="result-title">Your pair <span class="muted" id="originalContrastLine"></span></div>
+        <div class="pair-card">
+          <div class="pair-swatch" id="originalSwatch">
+            <span class="sample-text" id="originalSampleText">Sample text</span>
+          </div>
+          <div class="pair-meta">
+            <div class="pair-hexes">
+              <span>A: <code id="originalHexA"></code></span>
+              <span>B: <code id="originalHexB"></code></span>
+            </div>
+            <div class="cvd-row" id="originalCvdRow"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-section">
+        <div class="result-title">Accessible suggestion <span class="muted" id="suggestedContrastLine"></span></div>
+        <div class="pair-card">
+          <div class="pair-swatch" id="suggestedSwatch">
+            <span class="sample-text" id="suggestedSampleText">Sample text</span>
+          </div>
+          <div class="pair-meta">
+            <div class="pair-hexes">
+              <span>A: <code id="suggestedHexA"></code></span>
+              <span>B: <code id="suggestedHexB"></code></span>
+            </div>
+            <div class="cvd-row" id="suggestedCvdRow"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="contact-footer">
+    <span>karensiena@gmail.com</span>
+    <a href="https://www.linkedin.com/in/siena-villancio-wolter/" aria-label="LinkedIn">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="4" fill="#000000"/>
+        <path d="M7.2 9.6H4.8V19.2H7.2V9.6Z" fill="#ffffff"/>
+        <path d="M6 8.4C6.795 8.4 7.44 7.755 7.44 6.96C7.44 6.165 6.795 5.52 6 5.52C5.205 5.52 4.56 6.165 4.56 6.96C4.56 7.755 5.205 8.4 6 8.4Z" fill="#ffffff"/>
+        <path d="M11.76 9.6H9.36V19.2H11.76V14.28C11.76 12.84 12.72 12.12 13.68 12.12C14.4 12.12 15.12 12.6 15.12 14.28V19.2H17.52V13.68C17.52 10.32 15.6 9.36 13.92 9.36C12.6 9.36 11.88 10.08 11.76 10.32V9.6Z" fill="#ffffff"/>
+      </svg>
+    </a>
+    <a href="https://github.com/kvillancio" aria-label="GitHub">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.58 2 12.2C2 16.68 4.87 20.47 8.84 21.8C9.34 21.9 9.52 21.58 9.52 21.31C9.52 21.07 9.51 20.19 9.51 19.27C6.73 19.88 6.14 18.05 6.14 18.05C5.68 16.87 5.03 16.55 5.03 16.55C4.13 15.93 5.1 15.94 5.1 15.94C6.1 16.01 6.63 16.98 6.63 16.98C7.5 18.51 8.93 18.06 9.5 17.81C9.59 17.16 9.85 16.72 10.13 16.47C7.9 16.22 5.56 15.35 5.56 11.47C5.56 10.36 5.96 9.44 6.65 8.73C6.54 8.48 6.19 7.42 6.75 6.02C6.75 6.02 7.63 5.74 9.5 7.02C10.29 6.8 11.15 6.68 12 6.68C12.85 6.68 13.71 6.8 14.5 7.02C16.37 5.74 17.25 6.02 17.25 6.02C17.81 7.42 17.46 8.48 17.35 8.73C18.04 9.44 18.44 10.36 18.44 11.47C18.44 15.36 16.1 16.22 13.86 16.46C14.22 16.77 14.54 17.37 14.54 18.31C14.54 19.65 14.53 20.97 14.53 21.31C14.53 21.58 14.71 21.9 15.22 21.8C19.19 20.46 22.06 16.68 22.06 12.2C22.06 6.58 17.52 2 12 2Z" fill="#000000"/>
+      </svg>
+    </a>
+    <a href="siena_villancio_resume.pdf" target="_blank" style="font-size: 16px; letter-spacing: 0.3px;">resume/cv</a>
+  </footer>
+
+  <script>
+  /* ============================================================
+     Color math helpers
+     ============================================================ */
+
+  function hexToRgb(hex) {
+    hex = hex.replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    const num = parseInt(hex, 16);
+    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+  }
+
+  function rgbToHex({ r, g, b }) {
+    const toHex = v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+    return '#' + toHex(r) + toHex(g) + toHex(b);
+  }
+
+  function rgbToHsl({ r, g, b }) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+    if (max === min) {
+      h = s = 0;
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+    return { h: h * 360, s: s * 100, l: l * 100 };
+  }
+
+  function hslToRgb({ h, s, l }) {
+    h /= 360; s /= 100; l /= 100;
+    let r, g, b;
+    if (s === 0) {
+      r = g = b = l;
+    } else {
+      const hue2rgb = (p, q, t) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+        return p;
+      };
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1 / 3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1 / 3);
+    }
+    return { r: r * 255, g: g * 255, b: b * 255 };
+  }
+
+  // WCAG relative luminance + contrast ratio
+  function relativeLuminance({ r, g, b }) {
+    const chan = v => {
+      v /= 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    };
+    const R = chan(r), G = chan(g), B = chan(b);
+    return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+  }
+
+  function contrastRatio(rgbA, rgbB) {
+    const L1 = relativeLuminance(rgbA);
+    const L2 = relativeLuminance(rgbB);
+    const lighter = Math.max(L1, L2);
+    const darker = Math.min(L1, L2);
+    return (lighter + 0.05) / (darker + 0.05);
+  }
+
+  /* ---- Color blindness simulation (Machado/Oliveira/Fernandes matrices,
+     full-severity dichromacy, applied in linear RGB) ---- */
+
+  const CVD_MATRICES = {
+    protanopia: [
+      [0.152286, 1.052583, -0.204868],
+      [0.114503, 0.786281, 0.099216],
+      [-0.003882, -0.048116, 1.051998]
+    ],
+    deuteranopia: [
+      [0.367322, 0.860646, -0.227968],
+      [0.280085, 0.672501, 0.047413],
+      [-0.011820, 0.042940, 0.968881]
+    ],
+    tritanopia: [
+      [1.255528, -0.076749, -0.178779],
+      [-0.078411, 0.930809, 0.147602],
+      [0.004733, 0.691367, 0.303900]
+    ]
+  };
+
+  function srgbToLinear(v) {
+    v /= 255;
+    return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  }
+
+  function linearToSrgb(v) {
+    v = Math.max(0, Math.min(1, v));
+    const out = v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055;
+    return out * 255;
+  }
+
+  function simulateCvd(rgb, type) {
+    const m = CVD_MATRICES[type];
+    const lr = srgbToLinear(rgb.r), lg = srgbToLinear(rgb.g), lb = srgbToLinear(rgb.b);
+    const r2 = m[0][0] * lr + m[0][1] * lg + m[0][2] * lb;
+    const g2 = m[1][0] * lr + m[1][1] * lg + m[1][2] * lb;
+    const b2 = m[2][0] * lr + m[2][1] * lg + m[2][2] * lb;
+    return {
+      r: linearToSrgb(r2),
+      g: linearToSrgb(g2),
+      b: linearToSrgb(b2)
+    };
+  }
+
+  function readableTextColor(bgRgb) {
+    const white = { r: 255, g: 255, b: 255 };
+    const black = { r: 0, g: 0, b: 0 };
+    return contrastRatio(bgRgb, white) >= contrastRatio(bgRgb, black) ? '#ffffff' : '#000000';
+  }
+
+  /* ============================================================
+     Accessible-pair generator
+     Strategy: preserve hue/saturation, push the two colors' HSL
+     lightness apart (one lighter, one darker) until the WCAG
+     contrast ratio clears the AA threshold (4.5:1). Because this
+     targets luminance rather than hue, the result stays legible
+     for the common forms of color blindness too, which is why we
+     verify with the CVD simulation below rather than depend on it.
+     ============================================================ */
+
+  function generateAccessiblePair(hexA, hexB, targetRatio = 4.5) {
+    let hslA = rgbToHsl(hexToRgb(hexA));
+    let hslB = rgbToHsl(hexToRgb(hexB));
+
+    let rgbA = hslToRgb(hslA);
+    let rgbB = hslToRgb(hslB);
+
+    if (contrastRatio(rgbA, rgbB) >= targetRatio) {
+      return { hexA: rgbToHex(rgbA), hexB: rgbToHex(rgbB) };
+    }
+
+    // Decide which color should trend lighter vs darker
+    const aIsLighter = relativeLuminance(rgbA) >= relativeLuminance(rgbB);
+    let lightHsl = aIsLighter ? hslA : hslB;
+    let darkHsl = aIsLighter ? hslB : hslA;
+
+    const LIGHT_BOUND = 96;
+    const DARK_BOUND = 6;
+    const STEP = 0.75;
+
+    let ratio = contrastRatio(hslToRgb(lightHsl), hslToRgb(darkHsl));
+
+    while (ratio < targetRatio && (lightHsl.l < LIGHT_BOUND || darkHsl.l > DARK_BOUND)) {
+      if (lightHsl.l < LIGHT_BOUND) lightHsl.l = Math.min(LIGHT_BOUND, lightHsl.l + STEP);
+      if (darkHsl.l > DARK_BOUND) darkHsl.l = Math.max(DARK_BOUND, darkHsl.l - STEP);
+      ratio = contrastRatio(hslToRgb(lightHsl), hslToRgb(darkHsl));
+    }
+
+    // If still short (e.g. two near-identical hues), nudge saturation
+    // down slightly on the lighter one and up on the darker one —
+    // helps separate them further under color-blindness simulation too.
+    if (ratio < targetRatio) {
+      lightHsl.s = Math.max(0, lightHsl.s - 15);
+      darkHsl.s = Math.min(100, darkHsl.s + 10);
+    }
+
+    const finalLightRgb = hslToRgb(lightHsl);
+    const finalDarkRgb = hslToRgb(darkHsl);
+
+    return aIsLighter
+      ? { hexA: rgbToHex(finalLightRgb), hexB: rgbToHex(finalDarkRgb) }
+      : { hexA: rgbToHex(finalDarkRgb), hexB: rgbToHex(finalLightRgb) };
+  }
+
+  /* ============================================================
+     Color picker widget (hue slider + saturation/lightness square)
+     ============================================================ */
+
+  // Renders the canvas at devicePixelRatio resolution while keeping its
+  // CSS (logical) size fixed, so the circle/rectangle cursors stay crisp
+  // on retina/high-DPI screens instead of being upscaled and blurred.
+  function setupCanvasHiDPI(canvas, logicalWidth, logicalHeight) {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(logicalWidth * dpr);
+    canvas.height = Math.round(logicalHeight * dpr);
+    canvas.style.width = logicalWidth + 'px';
+    canvas.style.height = logicalHeight + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return ctx;
+  }
+
+  function createPicker({ squareId, hueId, hexInputId, dotId, initialHex, onChange, squareWidth = 240, squareHeight = 140, hueHeight = 16 }) {
+    const square = document.getElementById(squareId);
+    const hue = document.getElementById(hueId);
+    const hexInput = document.getElementById(hexInputId);
+    const dot = document.getElementById(dotId);
+    const sqCtx = setupCanvasHiDPI(square, squareWidth, squareHeight);
+    const hueCtx = setupCanvasHiDPI(hue, squareWidth, hueHeight);
+
+    let state = rgbToHsl(hexToRgb(initialHex));
+
+    function drawHueSlider() {
+      const w = squareWidth, h = hueHeight;
+      const grad = hueCtx.createLinearGradient(0, 0, w, 0);
+      for (let i = 0; i <= 360; i += 30) {
+        grad.addColorStop(i / 360, `hsl(${i}, 100%, 50%)`);
+      }
+      hueCtx.fillStyle = grad;
+      hueCtx.fillRect(0, 0, w, h);
+
+      const x = (state.h / 360) * w;
+      hueCtx.strokeStyle = '#ffffff';
+      hueCtx.lineWidth = 2;
+      hueCtx.strokeRect(x - 2, 0, 4, h);
+      hueCtx.strokeStyle = 'rgba(0,0,0,0.4)';
+      hueCtx.lineWidth = 1;
+      hueCtx.strokeRect(x - 2, 0, 4, h);
+    }
+
+    function drawSquare() {
+      const w = squareWidth, h = squareHeight;
+      // Base hue fill
+      sqCtx.fillStyle = `hsl(${state.h}, 100%, 50%)`;
+      sqCtx.fillRect(0, 0, w, h);
+
+      // White gradient (saturation axis)
+      let whiteGrad = sqCtx.createLinearGradient(0, 0, w, 0);
+      whiteGrad.addColorStop(0, 'rgba(255,255,255,1)');
+      whiteGrad.addColorStop(1, 'rgba(255,255,255,0)');
+      sqCtx.fillStyle = whiteGrad;
+      sqCtx.fillRect(0, 0, w, h);
+
+      // Black gradient (lightness axis)
+      let blackGrad = sqCtx.createLinearGradient(0, 0, 0, h);
+      blackGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      blackGrad.addColorStop(1, 'rgba(0,0,0,1)');
+      sqCtx.fillStyle = blackGrad;
+      sqCtx.fillRect(0, 0, w, h);
+
+      // Cursor: approximate x from saturation, y from (100 - "value")
+      // Convert HSL -> HSV for correct square placement
+      const hsv = hslToHsv(state);
+      const cx = (hsv.s / 100) * w;
+      const cy = (1 - hsv.v / 100) * h;
+
+      sqCtx.beginPath();
+      sqCtx.arc(cx, cy, 5.5, 0, Math.PI * 2);
+      sqCtx.strokeStyle = '#ffffff';
+      sqCtx.lineWidth = 2.5;
+      sqCtx.stroke();
+      sqCtx.beginPath();
+      sqCtx.arc(cx, cy, 5.5, 0, Math.PI * 2);
+      sqCtx.strokeStyle = 'rgba(0,0,0,0.5)';
+      sqCtx.lineWidth = 1;
+      sqCtx.stroke();
+    }
+
+    function hslToHsv({ h, s, l }) {
+      s /= 100; l /= 100;
+      const v = l + s * Math.min(l, 1 - l);
+      const sHsv = v === 0 ? 0 : 2 * (1 - l / v);
+      return { h, s: sHsv * 100, v: v * 100 };
+    }
+
+    function hsvToHsl({ h, s, v }) {
+      s /= 100; v /= 100;
+      const l = v * (1 - s / 2);
+      const sHsl = (l === 0 || l === 1) ? 0 : (v - l) / Math.min(l, 1 - l);
+      return { h, s: sHsl * 100, l: l * 100 };
+    }
+
+    function refresh() {
+      drawHueSlider();
+      drawSquare();
+      const rgb = hslToRgb(state);
+      const hex = rgbToHex(rgb);
+      hexInput.value = hex;
+      dot.style.background = hex;
+      onChange(hex);
+    }
+
+    function setFromSquarePos(x, y) {
+      const clampedX = Math.max(0, Math.min(squareWidth, x));
+      const clampedY = Math.max(0, Math.min(squareHeight, y));
+      const s = (clampedX / squareWidth) * 100;
+      const v = (1 - clampedY / squareHeight) * 100;
+      const newHsl = hsvToHsl({ h: state.h, s, v });
+      state = { h: state.h, s: newHsl.s, l: newHsl.l };
+      refresh();
+    }
+
+    function setFromHuePos(x) {
+      const clampedX = Math.max(0, Math.min(squareWidth, x));
+      state.h = (clampedX / squareWidth) * 360;
+      refresh();
+    }
+
+    // Maps a pointer/touch event to logical (CSS-pixel) coordinates on the
+    // given canvas, independent of its device-pixel backing resolution.
+    function pointerPos(canvas, evt) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+      const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+      return {
+        x: (clientX - rect.left) * (squareWidth / rect.width),
+        y: (clientY - rect.top) * ((canvas === square ? squareHeight : hueHeight) / rect.height)
+      };
+    }
+
+    let draggingSquare = false;
+    let draggingHue = false;
+
+    square.addEventListener('mousedown', e => { draggingSquare = true; const p = pointerPos(square, e); setFromSquarePos(p.x, p.y); });
+    window.addEventListener('mousemove', e => { if (draggingSquare) { const p = pointerPos(square, e); setFromSquarePos(p.x, p.y); } });
+    window.addEventListener('mouseup', () => { draggingSquare = false; draggingHue = false; });
+
+    hue.addEventListener('mousedown', e => { draggingHue = true; const p = pointerPos(hue, e); setFromHuePos(p.x); });
+    window.addEventListener('mousemove', e => { if (draggingHue) { const p = pointerPos(hue, e); setFromHuePos(p.x); } });
+
+    square.addEventListener('touchstart', e => { draggingSquare = true; const p = pointerPos(square, e); setFromSquarePos(p.x, p.y); }, { passive: true });
+    square.addEventListener('touchmove', e => { if (draggingSquare) { const p = pointerPos(square, e); setFromSquarePos(p.x, p.y); } }, { passive: true });
+    hue.addEventListener('touchstart', e => { draggingHue = true; const p = pointerPos(hue, e); setFromHuePos(p.x); }, { passive: true });
+    hue.addEventListener('touchmove', e => { if (draggingHue) { const p = pointerPos(hue, e); setFromHuePos(p.x); } }, { passive: true });
+
+    window.addEventListener('touchend', () => { draggingSquare = false; draggingHue = false; });
+
+    hexInput.addEventListener('change', () => {
+      let val = hexInput.value.trim();
+      if (!/^#?[0-9a-fA-F]{6}$/.test(val)) { refresh(); return; }
+      if (val[0] !== '#') val = '#' + val;
+      state = rgbToHsl(hexToRgb(val));
+      refresh();
+    });
+
+    refresh();
+
+    return {
+      getHex: () => hexInput.value
+    };
+  }
+
+  /* ============================================================
+     Locked-color variant of the accessible-pair generator.
+     Keeps `fixedHex` untouched and only pushes `adjustHex`'s
+     lightness (and, as a last resort, saturation) up or down until
+     it clears the target contrast ratio against the fixed color.
+     ============================================================ */
+
+  function generateAccessibleAgainstFixed(fixedHex, adjustHex, targetRatio = 4.5) {
+    const fixedRgb = hexToRgb(fixedHex);
+    const startHsl = rgbToHsl(hexToRgb(adjustHex));
+    const startRgb = hslToRgb(startHsl);
+
+    if (contrastRatio(fixedRgb, startRgb) >= targetRatio) {
+      return rgbToHex(startRgb);
+    }
+
+    const LIGHT_BOUND = 96;
+    const DARK_BOUND = 6;
+    const STEP = 0.75;
+
+    // Try pushing lighter
+    let lightHsl = { ...startHsl };
+    let ratioLight = contrastRatio(fixedRgb, hslToRgb(lightHsl));
+    while (ratioLight < targetRatio && lightHsl.l < LIGHT_BOUND) {
+      lightHsl.l = Math.min(LIGHT_BOUND, lightHsl.l + STEP);
+      ratioLight = contrastRatio(fixedRgb, hslToRgb(lightHsl));
+    }
+
+    // Try pushing darker
+    let darkHsl = { ...startHsl };
+    let ratioDark = contrastRatio(fixedRgb, hslToRgb(darkHsl));
+    while (ratioDark < targetRatio && darkHsl.l > DARK_BOUND) {
+      darkHsl.l = Math.max(DARK_BOUND, darkHsl.l - STEP);
+      ratioDark = contrastRatio(fixedRgb, hslToRgb(darkHsl));
+    }
+
+    const lightReached = ratioLight >= targetRatio;
+    const darkReached = ratioDark >= targetRatio;
+
+    let chosenHsl;
+    if (lightReached && darkReached) {
+      // Both directions clear the bar — pick whichever needed the smaller nudge
+      chosenHsl = Math.abs(lightHsl.l - startHsl.l) <= Math.abs(startHsl.l - darkHsl.l) ? lightHsl : darkHsl;
+    } else if (lightReached) {
+      chosenHsl = lightHsl;
+    } else if (darkReached) {
+      chosenHsl = darkHsl;
+    } else {
+      // Neither hit the bound reached target (e.g. fixed color is mid-gray) —
+      // take whichever got closer, then nudge saturation to separate further.
+      chosenHsl = ratioLight >= ratioDark ? { ...lightHsl } : { ...darkHsl };
+      const wentLighter = chosenHsl.l >= startHsl.l;
+      chosenHsl.s = wentLighter ? Math.max(0, chosenHsl.s - 15) : Math.min(100, chosenHsl.s + 10);
+    }
+
+    return rgbToHex(hslToRgb(chosenHsl));
+  }
+
+  /* ============================================================
+     Wire up the page
+     ============================================================ */
+
+  let currentHexA = '#3B82F6';
+  let currentHexB = '#F97316';
+  let lockedColor = null; // null | 'A' | 'B'
+
+  function toggleLock(which) {
+    if (lockedColor === which) {
+      lockedColor = null;
+    } else {
+      lockedColor = which;
+    }
+    updateLockUI();
+  }
+
+  function updateLockUI() {
+    const cardA = document.getElementById('cardA');
+    const cardB = document.getElementById('cardB');
+    const lockA = document.getElementById('lockA');
+    const lockB = document.getElementById('lockB');
+
+    cardA.classList.toggle('locked', lockedColor === 'A');
+    cardB.classList.toggle('locked', lockedColor === 'B');
+    lockA.setAttribute('aria-pressed', lockedColor === 'A' ? 'true' : 'false');
+    lockB.setAttribute('aria-pressed', lockedColor === 'B' ? 'true' : 'false');
+    lockA.setAttribute('aria-label', lockedColor === 'A' ? 'Unlock color A' : 'Lock color A');
+    lockB.setAttribute('aria-label', lockedColor === 'B' ? 'Unlock color B' : 'Lock color B');
+  }
+
+  const pickerA = createPicker({
+    squareId: 'squareA', hueId: 'hueA', hexInputId: 'hexInputA', dotId: 'dotA',
+    initialHex: currentHexA,
+    onChange: hex => { currentHexA = hex; },
+    squareWidth: 500, squareHeight: 250, hueHeight: 16
+  });
+
+  const pickerB = createPicker({
+    squareId: 'squareB', hueId: 'hueB', hexInputId: 'hexInputB', dotId: 'dotB',
+    initialHex: currentHexB,
+    onChange: hex => { currentHexB = hex; },
+    squareWidth: 500, squareHeight: 250, hueHeight: 16
+  });
+
+  function cvdLabel(type) {
+    return { protanopia: 'Protanopia', deuteranopia: 'Deuteranopia', tritanopia: 'Tritanopia' }[type];
+  }
+
+  function renderCvdRow(container, hexA, hexB) {
+    container.innerHTML = '';
+    ['protanopia', 'deuteranopia', 'tritanopia'].forEach(type => {
+      const simA = simulateCvd(hexToRgb(hexA), type);
+      const simB = simulateCvd(hexToRgb(hexB), type);
+
+      const item = document.createElement('div');
+      item.className = 'cvd-item';
+
+      const label = document.createElement('div');
+      label.className = 'cvd-label';
+      label.textContent = cvdLabel(type);
+
+      const swatch = document.createElement('div');
+      swatch.className = 'cvd-swatch';
+      swatch.style.background = rgbToHex(simA);
+
+      const span = document.createElement('span');
+      span.textContent = 'Aa';
+      span.style.color = rgbToHex(simB);
+      swatch.appendChild(span);
+
+      item.appendChild(label);
+      item.appendChild(swatch);
+      container.appendChild(item);
+    });
+  }
+
+  function renderPair({ hexA, hexB, swatchEl, sampleTextEl, hexAEl, hexBEl, contrastLineEl, cvdRowEl }) {
+    const rgbA = hexToRgb(hexA);
+    const rgbB = hexToRgb(hexB);
+    const ratio = contrastRatio(rgbA, rgbB);
+
+    swatchEl.style.background = hexA;
+    sampleTextEl.style.color = hexB;
+    sampleTextEl.textContent = 'Sample text';
+
+    hexAEl.textContent = hexA;
+    hexBEl.textContent = hexB;
+
+    const passAA = ratio >= 4.5;
+    const passAALarge = ratio >= 3;
+    let badgeHtml;
+    if (passAA) {
+      badgeHtml = '<span class="badge pass">AA PASS</span>';
+    } else if (passAALarge) {
+      badgeHtml = '<span class="badge fail">AA FAIL (large text only)</span>';
+    } else {
+      badgeHtml = '<span class="badge fail">AA FAIL</span>';
+    }
+    contrastLineEl.innerHTML = `&middot; contrast ${ratio.toFixed(2)}:1 ${badgeHtml}`;
+
+    renderCvdRow(cvdRowEl, hexA, hexB);
+  }
+
+  document.getElementById('generateBtn').addEventListener('click', () => {
+    const hexA = pickerA.getHex();
+    const hexB = pickerB.getHex();
+
+    renderPair({
+      hexA, hexB,
+      swatchEl: document.getElementById('originalSwatch'),
+      sampleTextEl: document.getElementById('originalSampleText'),
+      hexAEl: document.getElementById('originalHexA'),
+      hexBEl: document.getElementById('originalHexB'),
+      contrastLineEl: document.getElementById('originalContrastLine'),
+      cvdRowEl: document.getElementById('originalCvdRow')
+    });
+
+    let suggestion;
+    if (lockedColor === 'A') {
+      suggestion = { hexA: hexA, hexB: generateAccessibleAgainstFixed(hexA, hexB) };
+    } else if (lockedColor === 'B') {
+      suggestion = { hexA: generateAccessibleAgainstFixed(hexB, hexA), hexB: hexB };
+    } else {
+      suggestion = generateAccessiblePair(hexA, hexB);
+    }
+
+    renderPair({
+      hexA: suggestion.hexA, hexB: suggestion.hexB,
+      swatchEl: document.getElementById('suggestedSwatch'),
+      sampleTextEl: document.getElementById('suggestedSampleText'),
+      hexAEl: document.getElementById('suggestedHexA'),
+      hexBEl: document.getElementById('suggestedHexB'),
+      contrastLineEl: document.getElementById('suggestedContrastLine'),
+      cvdRowEl: document.getElementById('suggestedCvdRow')
+    });
+
+    document.getElementById('results').classList.add('visible');
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  </script>
+
+</body>
+</html>
