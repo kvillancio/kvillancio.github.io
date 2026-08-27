@@ -164,6 +164,32 @@
     gap: 24px;
   }
 
+  /* Engineering grid: 4x2 layout of compact cards */
+  #engineering .project-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  @media (max-width: 1024px) {
+    #engineering .project-list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 760px) {
+    #engineering .project-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    #engineering .project-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
   /* Simple link-style pill button (used for fashion, which opens a new page) */
   .project-card-simple {
     display: flex;
@@ -227,7 +253,7 @@
   .project-card {
     background: #efefef;
     border-radius: 20px;
-    padding: 24px;
+    padding: 16px;
     cursor: pointer;
     transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
   }
@@ -242,7 +268,8 @@
 
   .project-card.expanded {
     background: #e9e9e9;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+    padding: 24px;
   }
 
   .card-summary {
@@ -250,11 +277,32 @@
     align-items: center;
     justify-content: space-between;
     gap: 24px;
+    position: relative;
   }
 
-  /* Preview photo shown on every card (summary row). Grows to match the
-     expanded-photo size when the card opens, so it lines up with the
-     rest of the photo column instead of staying small next to them. */
+  /* Engineering grid cards: photo column stacked above text column, full
+     card width, with the expand chevron overlaid as a corner badge on
+     the photo. The photo column and text column are independent
+     vertical flows (each holding its own always-visible content plus
+     its own collapsible "extra" content), so the divider between the
+     description and the expanded text sits right after the
+     description regardless of how tall the photo column is. */
+  #engineering .card-summary {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  #engineering .card-photo-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #engineering .card-text-col {
+    flex: 1;
+    min-width: 0;
+  }
+
   .card-photo-thumb {
     width: 130px;
     height: 130px;
@@ -263,23 +311,38 @@
     background: #d8d8d8;
     display: block;
     flex-shrink: 0;
-    transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1), height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .project-card.expanded .card-summary .card-photo-thumb {
-    width: 200px;
-    height: 200px;
+  #engineering .card-photo-col > .card-photo-thumb {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
   }
 
-  /* Extra photos revealed on expand start at the same larger size right
-     away, so the moment the card is open every photo matches. */
+  /* When a card expands, its summary row switches from a stacked
+     photo-on-top layout to a photo-left / text-right row, and the
+     photo shrinks to match the size used for every other photo in
+     the card. */
+  #engineering .project-card.expanded .card-summary {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  #engineering .project-card.expanded .card-photo-col > .card-photo-thumb {
+    width: 160px;
+    height: 160px;
+    aspect-ratio: auto;
+    flex-shrink: 0;
+  }
+
+  /* Extra photos revealed on expand match the shrunk summary photo size. */
   .card-expand-photos .card-photo-thumb {
-    width: 400px;
-    height: 400px;
+    width: 160px;
+    height: 160px;
   }
 
   .card-text-block {
-    flex: 1;
     min-width: 0;
   }
 
@@ -289,6 +352,10 @@
     flex-shrink: 0;
     display: inline-block;
     transition: transform 0.3s ease;
+  }
+
+  #engineering .card-summary .chevron {
+    display: none;
   }
 
   .project-card.expanded .card-summary .chevron {
@@ -302,6 +369,18 @@
     margin-bottom: 10px;
   }
 
+  /* Reserve space for the maximum title/description length (2 and 5
+     lines respectively) so every collapsed grid card is the same size. */
+  #engineering .card-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.3;
+    font-size: 15px;
+    min-height: 2.6em;
+  }
+
   .card-desc {
     font-size: 16px;
     line-height: 1.6;
@@ -313,50 +392,77 @@
     overflow: hidden;
   }
 
-  .card-expand-wrapper {
+  #engineering .card-desc {
+    font-size: 12.5px;
+    line-height: 1.5;
+    -webkit-line-clamp: 3;
+    min-height: 4.5em;
+  }
+
+  /* When expanded, the title/description no longer need the reserved
+     grid-uniformity height, so the expanded text can start right after
+     the actual description instead of after reserved-but-empty space. */
+  #engineering .project-card.expanded .card-title,
+  #engineering .project-card.expanded .card-desc {
+    min-height: 0;
+    -webkit-line-clamp: unset;
+    display: block;
+    overflow: visible;
+  }
+
+  #engineering .project-card.expanded .card-title {
+    font-size: 19px;
+  }
+
+  #engineering .project-card.expanded .card-desc {
+    font-size: 15px;
+  }
+
+  /* Each column (photos, text) has its own collapse/expand accordion,
+     so the two stay independent vertical flows. */
+  .card-expand-photos-wrapper,
+  .card-expand-text-wrapper {
     display: grid;
     grid-template-rows: 0fr;
     transition: grid-template-rows 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .project-card.expanded .card-expand-wrapper {
+  .project-card.expanded .card-expand-photos-wrapper,
+  .project-card.expanded .card-expand-text-wrapper {
     grid-template-rows: 1fr;
   }
 
-  .card-expand-inner {
+  .card-expand-photos-inner,
+  .card-expand-text-inner {
     overflow: hidden;
   }
 
-  .card-expand-content {
-    display: flex;
-    align-items: flex-start;
-    gap: 24px;
-    padding-top: 24px;
-    margin-top: 24px;
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  .card-expand-photos,
+  .card-expand-text {
+    margin-top: 16px;
     opacity: 0;
     transform: translateY(-6px);
     transition: opacity 0.3s ease, transform 0.35s ease;
   }
 
-  .project-card.expanded .card-expand-content {
+  .project-card.expanded .card-expand-photos,
+  .project-card.expanded .card-expand-text {
     opacity: 1;
     transform: translateY(0);
     transition-delay: 0.1s;
   }
 
-  /* Left-hand column: the preview photo plus two more, all the same
-     size, stacked above one another next to the expanded text. */
+  /* Extra photos, stacked above one another below the preview photo. */
   .card-expand-photos {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    flex-shrink: 0;
   }
 
+  /* Break between the description above and the expanded text below. */
   .card-expand-text {
-    flex: 1;
-    min-width: 0;
+    padding-top: 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
   }
 
   .card-desc-extended {
@@ -393,19 +499,19 @@
       border-radius: 10px;
     }
 
-    .project-card.expanded .card-summary .card-photo-thumb {
-      width: 110px;
-      height: 110px;
-    }
-
     .card-expand-photos .card-photo-thumb {
       width: 110px;
       height: 110px;
       border-radius: 10px;
     }
 
-    .card-expand-content {
+    #engineering .project-card.expanded .card-summary {
       flex-direction: column;
+    }
+
+    #engineering .project-card.expanded .card-photo-col > .card-photo-thumb {
+      width: 110px;
+      height: 110px;
     }
 
     .card-expand-photos {
@@ -413,56 +519,128 @@
       flex-wrap: wrap;
     }
   }
+
+  /* ---------------- Expanded card popup ("modal") ---------------- */
+  body.modal-open {
+    overflow: hidden;
+  }
+
+  .card-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0);
+    opacity: 0;
+    transition: opacity 0.28s ease, background 0.28s ease;
+  }
+
+  .card-modal-backdrop.visible {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .card-modal-backdrop.closing {
+    pointer-events: none;
+  }
+
+  .card-modal-backdrop .project-card {
+    cursor: default;
+  }
+
+  .card-modal-backdrop .project-card.expanded {
+    width: min(960px, 100%);
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    transform: scale(0.9);
+    opacity: 0;
+    transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.26s ease;
+  }
+
+  .card-modal-backdrop.visible .project-card.expanded {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  @media (max-width: 600px) {
+    .card-modal-backdrop {
+      padding: 20px 12px;
+    }
+
+    .card-modal-backdrop .project-card.expanded {
+      max-height: calc(100vh - 40px);
+    }
+  }
 </style>
 </head>
 
 <script>
-  // Expand/collapse project cards. Only one card can be open at a time,
-  // so opening a new card automatically closes whichever one was open.
+  // Clicking an engineering card pops its expanded version up over the
+  // page in a lightweight overlay. Clicking anywhere on the page (the
+  // overlay covers the whole viewport) closes it again.
   function toggleCard(card) {
-    const wasExpanded = card.classList.contains('expanded');
-
-    document.querySelectorAll('.project-card.expanded').forEach((openCard) => {
-      openCard.classList.remove('expanded');
-    });
-
-    if (!wasExpanded) {
-      card.classList.add('expanded');
-      scrollCardIntoView(card);
+    if (document.querySelector('.card-modal-backdrop:not(.closing)')) {
+      closeCardModal();
+      return;
     }
+    openCardModal(card);
   }
 
-  // Once a card finishes expanding, scroll just enough so the whole
-  // expanded card is visible (or, if it's taller than the viewport,
-  // so its top settles near the top of the screen).
-  function scrollCardIntoView(card) {
-    const wrapper = card.querySelector('.card-expand-wrapper');
-    if (!wrapper) return;
+  function openCardModal(card) {
+    const backdrop = document.createElement('div');
+    backdrop.className = 'card-modal-backdrop';
 
-    const onDone = (event) => {
-      if (event && event.propertyName !== 'grid-template-rows') return;
-      wrapper.removeEventListener('transitionend', onDone);
+    const clone = card.cloneNode(true);
+    clone.classList.add('expanded');
+    clone.removeAttribute('onclick');
 
-      const topPadding = 0;
-      const bottomPadding = 100;
-      const rect = card.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
+    // The chevron badge is only a "there's more" hint for the grid.
+    const chevron = clone.querySelector('.chevron');
+    if (chevron) chevron.remove();
 
-      let scrollDelta = 0;
-      if (rect.height > viewportHeight - topPadding - bottomPadding) {
-        scrollDelta = rect.top - topPadding;
-      } else if (rect.bottom > viewportHeight - bottomPadding) {
-        scrollDelta = rect.bottom - (viewportHeight - bottomPadding);
-      } else if (rect.top < topPadding) {
-        scrollDelta = rect.top - topPadding;
-      }
+    backdrop.appendChild(clone);
 
-      if (scrollDelta !== 0) {
-        window.scrollBy({ top: scrollDelta, behavior: 'smooth' });
-      }
-    };
+    // Keep the overlay inside #engineering so the engineering-specific
+    // card styles still apply to the clone.
+    (card.closest('.portfolio-category') || document.body).appendChild(backdrop);
+    document.body.classList.add('modal-open');
 
-    wrapper.addEventListener('transitionend', onDone);
+    // Two frames so the entrance transition actually runs.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => backdrop.classList.add('visible'));
+    });
+
+    backdrop.addEventListener('click', function (e) {
+      // Let links inside the card work (they open in new tabs).
+      if (e.target.closest('a')) return;
+      closeCardModal();
+    });
+
+    document.addEventListener('keydown', onModalKeydown);
+  }
+
+  function onModalKeydown(e) {
+    if (e.key === 'Escape') closeCardModal();
+  }
+
+  function closeCardModal() {
+    const backdrop = document.querySelector('.card-modal-backdrop:not(.closing)');
+    if (!backdrop) return;
+
+    document.removeEventListener('keydown', onModalKeydown);
+    document.body.classList.remove('modal-open');
+    // Keep the base class (so it stays fixed and fades out), drop
+    // .visible to run the exit transition, and mark it .closing so a
+    // fast re-click opens a fresh overlay instead of doing nothing.
+    backdrop.classList.remove('visible');
+    backdrop.classList.add('closing');
+
+    const remove = () => backdrop.remove();
+    backdrop.addEventListener('transitionend', remove, { once: true });
+    setTimeout(remove, 400);
   }
 </script>
 
@@ -506,21 +684,26 @@
 
         <div class="project-card" onclick="toggleCard(this)">
           <div class="card-summary">
-            <img class="card-photo-thumb" src="images/dephy.png" alt="title goes here">
-            <div class="card-text-block">
-              <div class="card-title">Muscle-controlled ankle exoskeleton</div>
-              <p class="card-desc">Evaluating a powered ankle exoskeleton with proportional myoelectric control in both 
-                lab and real world settings</p>
-            </div>
-            <span class="chevron">&gt;</span>
-          </div>
-          <div class="card-expand-wrapper">
-            <div class="card-expand-inner">
-              <div class="card-expand-content">
-                <div class="card-expand-photos">
+            <div class="card-photo-col">
+              <img class="card-photo-thumb" src="images/dephy.png" alt="title goes here">
+              <div class="card-expand-photos-wrapper">
+                <div class="card-expand-photos-inner">
+                  <div class="card-expand-photos">
+                  
+                  </div>
                 </div>
-                <div class="card-expand-text">
-                <p class="card-desc-extended">Abstract: Lower limb robotic exoskeletons are often studied in the context of 
+              </div>
+            </div>
+            <div class="card-text-col">
+              <div class="card-text-block">
+                <div class="card-title">Muscle-controlled ankle exoskeleton</div>
+                <p class="card-desc">Evaluating a powered ankle exoskeleton with proportional myoelectric control in both 
+                lab and real world settings</p>
+              </div>
+              <div class="card-expand-text-wrapper">
+                <div class="card-expand-text-inner">
+                  <div class="card-expand-text">
+                  <p class="card-desc-extended">Abstract: Lower limb robotic exoskeletons are often studied in the context of 
                   steady state treadmill walking in a laboratory environment. However, the end goal for exoskeletons is to 
                   be used in real world, complex environments. To reach the point that exoskeletons are openly adopted into 
                   our everyday lives, we need to understand how the human and robot interact outside of a laboratory. Metabolic 
@@ -542,28 +725,35 @@
                 <p class="card-desc-extended">Hybart, R., Villancio-Wolter, K. S., & Ferris, D. P. (2023). 
                   Metabolic cost of walking with electromechanical ankle exoskeletons under proportional 
                   myoelectric control on a treadmill and outdoors. PeerJ, 11, e15775. <a href="https://doi.org/10.7717/peerj.15775" target="_blank">https://doi.org/10.7717/peerj.15775</a></p>
+                  </div>
                 </div>
               </div>
             </div>
+            <span class="chevron">&gt;</span>
           </div>
         </div>
 
         <div class="project-card" onclick="toggleCard(this)">
           <div class="card-summary">
-            <img class="card-photo-thumb" src="images/heatmap_grid_adobe.png" alt="title goes here">
-            <div class="card-text-block">
-              <div class="card-title">Exoskeleton control parameter optimization</div>
-              <p class="card-desc">Using linear mixed models to characterize the effects of exoskeleton control parameters on various user outcomes</p>
-            </div>
-            <span class="chevron">&gt;</span>
-          </div>
-          <div class="card-expand-wrapper">
-            <div class="card-expand-inner">
-              <div class="card-expand-content">
-                <div class="card-expand-photos">
+            <div class="card-photo-col">
+              <img class="card-photo-thumb" src="images/heatmap_grid_adobe.png" alt="title goes here">
+              <div class="card-expand-photos-wrapper">
+                <div class="card-expand-photos-inner">
+                  <div class="card-expand-photos">
+                  
+                  </div>
                 </div>
-                <div class="card-expand-text">
-                <p class="card-desc-extended">Abstract (paper in progress): Lower limb exoskeletons have a wide array of 
+              </div>
+            </div>
+            <div class="card-text-col">
+              <div class="card-text-block">
+                <div class="card-title">Exoskeleton control parameter optimization</div>
+                <p class="card-desc">Using linear mixed models to characterize the effects of exoskeleton control parameters on various user outcomes</p>
+              </div>
+              <div class="card-expand-text-wrapper">
+                <div class="card-expand-text-inner">
+                  <div class="card-expand-text">
+                  <p class="card-desc-extended">Abstract (paper in progress): Lower limb exoskeletons have a wide array of 
                   applications in mobility assistance and rehabilitation. Many exoskeleton control strategies exist and each 
                   is defined by a set of controller-specific parameters. However, within a given control strategy, we do not 
                   yet know how different exoskeleton control parameters affect features of human gait. To bridge this gap, we 
@@ -577,30 +767,36 @@
                   experience, individual differences, and between-parameter interactions. If we can predict how control parameters 
                   affect different features of human gait, we can design controllers to achieve more precise goals, which can be 
                   leveraged for applications like user-customization and rehabilitation. </p>
+                  </div>
                 </div>
               </div>
             </div>
+            <span class="chevron">&gt;</span>
           </div>
         </div>
 
         <div class="project-card" onclick="toggleCard(this)">
           <div class="card-summary">
-            <img class="card-photo-thumb" src="images/imu_config.png" alt="title goes here">
-            <div class="card-text-block">
-              <div class="card-title">Inverse kinematics sensor pipeline comparison</div>
-              <p class="card-desc">Comparing inverse kinematics calculations using motion capture and inertial measurement units with varying placement configurations</p>
-            </div>
-            <span class="chevron">&gt;</span>
-          </div>
-          <div class="card-expand-wrapper">
-            <div class="card-expand-inner">
-              <div class="card-expand-content">
-                <div class="card-expand-photos">
+            <div class="card-photo-col">
+              <img class="card-photo-thumb" src="images/imu_config.png" alt="title goes here">
+              <div class="card-expand-photos-wrapper">
+                <div class="card-expand-photos-inner">
+                  <div class="card-expand-photos">
                   <img class="card-photo-thumb" src="images/markers.png" alt="title goes here">
                   <img class="card-photo-thumb" src="images/skeleton.png" alt="title goes here">
+                  </div>
                 </div>
-                <div class="card-expand-text">
-                <p class="card-desc-extended">Abstract: Inertial measurement units (IMUs) are wearable sensors that can be used 
+              </div>
+            </div>
+            <div class="card-text-col">
+              <div class="card-text-block">
+                <div class="card-title">Inverse kinematics sensor pipeline comparison</div>
+                <p class="card-desc">Comparing inverse kinematics calculations using motion capture and inertial measurement units with varying placement configurations</p>
+              </div>
+              <div class="card-expand-text-wrapper">
+                <div class="card-expand-text-inner">
+                  <div class="card-expand-text">
+                  <p class="card-desc-extended">Abstract: Inertial measurement units (IMUs) are wearable sensors that can be used 
                   for portable human gait analysis (e.g. joint angles). This has many potential applications, from clinical gait 
                   assessments to outdoor research studies. Our study aims to investigate how walking speed and IMU placement on 
                   the body effects joint angle calculations during gait. In this study, 4 healthy young adults wore 10 IMUs 
@@ -615,57 +811,70 @@
                   clinical population.</p>
                 <br>
                 <p class="card-desc-extended"><a href="https://ufdc.ufl.edu/AA00098426/00001/citation" target="_blank">Link to thesis</a></p>
+                  </div>
                 </div>
               </div>
             </div>
+            <span class="chevron">&gt;</span>
           </div>
         </div>
 
         <div class="project-card" onclick="toggleCard(this)">
           <div class="card-summary">
-            <img class="card-photo-thumb" src="images/jordy.png" alt="title goes here">
-            <div class="card-text-block">
-              <div class="card-title">Canine prosthetic limb design and development</div>
-              <p class="card-desc">Building low-cost prostheses for dogs with limb differences</p>
-            </div>
-            <span class="chevron">&gt;</span>
-          </div>
-          <div class="card-expand-wrapper">
-            <div class="card-expand-inner">
-              <div class="card-expand-content">
-                <div class="card-expand-photos">
+            <div class="card-photo-col">
+              <img class="card-photo-thumb" src="images/jordy.png" alt="title goes here">
+              <div class="card-expand-photos-wrapper">
+                <div class="card-expand-photos-inner">
+                  <div class="card-expand-photos">
                   <img class="card-photo-thumb" src="images/pawsteam.JPG" alt="title goes here">
                   <img class="card-photo-thumb" src="images/jordyfoot.png" alt="title goes here">
+                  </div>
                 </div>
-                <div class="card-expand-text">
-                <p class="card-desc-extended">At the University of Florida, I led an engineering design team called
+              </div>
+            </div>
+            <div class="card-text-col">
+              <div class="card-text-block">
+                <div class="card-title">Canine prosthetic limb design and development</div>
+                <p class="card-desc">Building low-cost prostheses for dogs with limb differences</p>
+              </div>
+              <div class="card-expand-text-wrapper">
+                <div class="card-expand-text-inner">
+                  <div class="card-expand-text">
+                  <p class="card-desc-extended">At the University of Florida, I led an engineering design team called
                   Pawsthetics. We designed and built 3D-printed prostheses for dogs with varying limb differences.
                   I attribute this team to so many of my skills as an engineer and designer and am so grateful for all
                   of my team members. Visit <a href="https://www.instagram.com/ufpawsthetics/@ufpawsthetics" target="_blank">@ufpawsthetics</a> 
                   on Instagram to see some of our work and keep up with the team!
                 </p>
+                  </div>
                 </div>
               </div>
             </div>
+            <span class="chevron">&gt;</span>
           </div>
         </div>
 
         <div class="project-card" onclick="toggleCard(this)">
           <div class="card-summary">
-            <img class="card-photo-thumb" src="images/dataviz.png" alt="title goes here">
-            <div class="card-text-block">
-              <div class="card-title">Interactive large scale data exploration tool</div>
-              <p class="card-desc">Data visualization project</p>
-            </div>
-            <span class="chevron">&gt;</span>
-          </div>
-          <div class="card-expand-wrapper">
-            <div class="card-expand-inner">
-              <div class="card-expand-content">
-                <div class="card-expand-photos">
+            <div class="card-photo-col">
+              <img class="card-photo-thumb" src="images/dataviz.png" alt="title goes here">
+              <div class="card-expand-photos-wrapper">
+                <div class="card-expand-photos-inner">
+                  <div class="card-expand-photos">
+                  
+                  </div>
                 </div>
-                <div class="card-expand-text">
-                <p class="card-desc-extended">This website is the result of an open-ended project I built with Ally Clarke 
+              </div>
+            </div>
+            <div class="card-text-col">
+              <div class="card-text-block">
+                <div class="card-title">Interactive large scale data exploration tool</div>
+                <p class="card-desc">Data visualization project</p>
+              </div>
+              <div class="card-expand-text-wrapper">
+                <div class="card-expand-text-inner">
+                  <div class="card-expand-text">
+                  <p class="card-desc-extended">This website is the result of an open-ended project I built with Ally Clarke 
                   for a CSE data visualization class at the University of Washington [CSE512 taught by Jeffrey Heer]. It uses an
                   open-source dataset from <a href="https://doi.org/10.1126/scirobotics.abf1078" target="_blank">this paper</a>
                   that contains human biomechanics data during treadmill walking with a powered ankle exoskeleton. We designed our
@@ -673,61 +882,73 @@
                   multiple modalities.</p>
                 <br>
                 <a href="https://effect-of-exoskeleton-on-ankle-biomechanics-49469d.pages.cs.washington.edu/" target="_blank">Link to project page</a>
+                  </div>
                 </div>
               </div>
             </div>
+            <span class="chevron">&gt;</span>
           </div>
         </div>
 
         <div class="project-card" onclick="toggleCard(this)">
           <div class="card-summary">
-            <img class="card-photo-thumb" src="images/gobabygo.png" alt="title goes here">
-            <div class="card-text-block">
-              <div class="card-title">Accessible tech adaptations</div>
-              <p class="card-desc">Adapting toys, jeeps, and other things</p>
-            </div>
-            <span class="chevron">&gt;</span>
-          </div>
-          <div class="card-expand-wrapper">
-            <div class="card-expand-inner">
-              <div class="card-expand-content">
-                <div class="card-expand-photos">
+            <div class="card-photo-col">
+              <img class="card-photo-thumb" src="images/gobabygo.png" alt="title goes here">
+              <div class="card-expand-photos-wrapper">
+                <div class="card-expand-photos-inner">
+                  <div class="card-expand-photos">
                   <img class="card-photo-thumb" src="images/grippers.png" alt="title goes here">
                   <img class="card-photo-thumb" src="images/cactustoy.png" alt="title goes here">
                   <img class="card-photo-thumb" src="images/switches.png" alt="title goes here">
+                  </div>
                 </div>
-                <div class="card-expand-text">
-                <p class="card-desc-extended">
+              </div>
+            </div>
+            <div class="card-text-col">
+              <div class="card-text-block">
+                <div class="card-title">Accessible tech adaptations</div>
+                <p class="card-desc">Adapting toys, jeeps, and other things</p>
+              </div>
+              <div class="card-expand-text-wrapper">
+                <div class="card-expand-text-inner">
+                  <div class="card-expand-text">
+                  <p class="card-desc-extended">
                   <a href="https://faculty.eng.ufl.edu/grip/" target="_blank">Generational Relief in Prosthetics (GRiP)</a>
                   <br> 
                   <a href="https://www.huskyadapt.me.uw.edu/HuskyADAPT" target="_blank">HuskyADAPT</a>
                   <br>
                   <a href="https://gobabygo.rehab.washington.edu/GoBabyGo" target="_blank">GoBabyGo</a>
                 </p>
+                  </div>
                 </div>
               </div>
             </div>
+            <span class="chevron">&gt;</span>
           </div>
         </div>
 
         <div class="project-card" onclick="toggleCard(this)">
           <div class="card-summary">
-            <img class="card-photo-thumb" src="images/robot_art.png" alt="title goes here">
-            <div class="card-text-block">
-              <div class="card-title">Paper circuit art lesson!</div>
-              <p class="card-desc">Teaching introductory circuit concepts to elementary school students through art</p>
-            </div>
-            <span class="chevron">&gt;</span>
-          </div>
-          <div class="card-expand-wrapper">
-            <div class="card-expand-inner">
-              <div class="card-expand-content">
-                <div class="card-expand-photos">
+            <div class="card-photo-col">
+              <img class="card-photo-thumb" src="images/robot_art.png" alt="title goes here">
+              <div class="card-expand-photos-wrapper">
+                <div class="card-expand-photos-inner">
+                  <div class="card-expand-photos">
                   <video class="card-photo-thumb" src="images/IMG_3902.mov" alt="title goes here" autoplay muted loop></video>
                   <img class="card-photo-thumb" src="images/circuit_labeled.png" alt="title goes here">
+                  </div>
                 </div>
-                <div class="card-expand-text">
-                <p class="card-desc-extended">During grad school, I had the opportunity to design and lead a lesson 
+              </div>
+            </div>
+            <div class="card-text-col">
+              <div class="card-text-block">
+                <div class="card-title">Paper circuit art lesson!</div>
+                <p class="card-desc">Teaching introductory circuit concepts to elementary school students through art</p>
+              </div>
+              <div class="card-expand-text-wrapper">
+                <div class="card-expand-text-inner">
+                  <div class="card-expand-text">
+                  <p class="card-desc-extended">During grad school, I had the opportunity to design and lead a lesson 
                   plan for an after-school STEM program at a local elementary school in Seattle. I knew I wanted to 
                   create a lesson anchored in art both because I believe art and engineering go hand in hand 
                   and because I noticed how much more engaged the students were during activities that 
@@ -743,34 +964,42 @@
                   hold the magnetic piece over the reed switch, the circuit closes and the LEDs illuminate.</p>
                 <br>
                 <p class="card-desc-extended">Happy circuit building!</p>
+                  </div>
                 </div>
               </div>
             </div>
+            <span class="chevron">&gt;</span>
           </div>
         </div>
 
         <div class="project-card" onclick="toggleCard(this)">
           <div class="card-summary">
-            <img class="card-photo-thumb" src="images/glove.png" alt="title goes here">
-            <div class="card-text-block">
-              <div class="card-title">Gesture-based sensor glove</div>
-              <p class="card-desc">Pressure sensor glove designed for augmentative and alternative communication (AAC)</p>
-            </div>
-            <span class="chevron">&gt;</span>
-          </div>
-          <div class="card-expand-wrapper">
-            <div class="card-expand-inner">
-              <div class="card-expand-content">
-                <div class="card-expand-photos">
+            <div class="card-photo-col">
+              <img class="card-photo-thumb" src="images/glove.png" alt="title goes here">
+              <div class="card-expand-photos-wrapper">
+                <div class="card-expand-photos-inner">
+                  <div class="card-expand-photos">
                   <img class="card-photo-thumb" src="images/glovecircuit.png" alt="title goes here">
                   <img class="card-photo-thumb" src="images/glovemap.png" alt="title goes here">
                   <img class="card-photo-thumb" src="images/gloveuix.png" alt="title goes here">
-                </div>
-                <div class="card-expand-text">
-                <p class="card-desc-extended"></p>
+                  </div>
                 </div>
               </div>
             </div>
+            <div class="card-text-col">
+              <div class="card-text-block">
+                <div class="card-title">Gesture-based sensor glove</div>
+                <p class="card-desc">Pressure sensor glove designed for augmentative and alternative communication (AAC)</p>
+              </div>
+              <div class="card-expand-text-wrapper">
+                <div class="card-expand-text-inner">
+                  <div class="card-expand-text">
+                  <p class="card-desc-extended"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <span class="chevron">&gt;</span>
           </div>
         </div>
 
