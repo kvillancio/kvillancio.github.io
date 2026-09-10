@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Siena Villancio-Wolter</title>
 <link rel="stylesheet" href="https://fontlibrary.org/face/anka-coder" type="text/css">
+<!-- Site chrome: nav + contact bar come from the shared stylesheet. -->
+<link rel="stylesheet" href="styles.css">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -14,29 +16,10 @@
   }
 
   body {
+    padding: 0;              /* no wordmark gutter on the tool pages */
     background: #ffffff;
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
     overflow-x: hidden;
-  }
-
-  /* Top navigation (matches site) */
-  .top-nav {
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
-    gap: 60px;
-    padding: 40px 60px 0 40px;
-  }
-
-  .top-nav a {
-    color: #000000;
-    text-decoration: none;
-    font-size: 26px;
-    letter-spacing: 0.5px;
-  }
-
-  .top-nav a:hover {
-    opacity: 0.6;
   }
 
   .menu-wrapper {
@@ -113,45 +96,8 @@
   .menu-dropdown.open a:nth-child(1) { transition-delay: 0.05s; }
   .menu-dropdown.open a:nth-child(2) { transition-delay: 0.12s; }
 
-  /* Footer contact bar (matches site) */
-  .contact-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    padding: 24px 40px;
-    border-top: 1px solid #e5e5e5;
-    background: #ffffff;
-    z-index: 10;
-  }
-
-  .contact-footer span {
-    font-size: 16px;
-    color: #000000;
-    letter-spacing: 0.3px;
-  }
-
-  .contact-footer a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #000000;
-    text-decoration: none;
-  }
-
-  .contact-footer svg {
-    width: 26px;
-    height: 26px;
-  }
-
   @media (max-width: 600px) {
-    .top-nav { gap: 24px; padding: 24px 24px 0 24px; }
-    .top-nav a, #menuToggle { font-size: 14px; }
     .menu-dropdown a { font-size: 12px; }
-    .contact-footer { padding: 16px 24px; }
   }
 
   /* ---------------- Page content ---------------- */
@@ -496,9 +442,10 @@
 
 <body>
 
-  <nav class="top-nav">
-    <a href="index.html">home</a>
-    <a href="gallery.html">gallery</a>
+  <nav class="nav">
+    <a href="about.html">about</a>
+    <a href="collections.html">collections</a>
+    <a href="tech.html" aria-current="page">tech</a>
   </nav>
 
   <div class="tool-wrap">
@@ -591,22 +538,12 @@
     </div>
   </div>
 
-  <footer class="contact-footer">
-    <span>karensiena@gmail.com</span>
-    <a href="https://www.linkedin.com/in/siena-villancio-wolter/" aria-label="LinkedIn">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="24" height="24" rx="4" fill="#000000"/>
-        <path d="M7.2 9.6H4.8V19.2H7.2V9.6Z" fill="#ffffff"/>
-        <path d="M6 8.4C6.795 8.4 7.44 7.755 7.44 6.96C7.44 6.165 6.795 5.52 6 5.52C5.205 5.52 4.56 6.165 4.56 6.96C4.56 7.755 5.205 8.4 6 8.4Z" fill="#ffffff"/>
-        <path d="M11.76 9.6H9.36V19.2H11.76V14.28C11.76 12.84 12.72 12.12 13.68 12.12C14.4 12.12 15.12 12.6 15.12 14.28V19.2H17.52V13.68C17.52 10.32 15.6 9.36 13.92 9.36C12.6 9.36 11.88 10.08 11.76 10.32V9.6Z" fill="#ffffff"/>
-      </svg>
-    </a>
-    <a href="https://github.com/kvillancio" aria-label="GitHub">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C6.48 2 2 6.58 2 12.2C2 16.68 4.87 20.47 8.84 21.8C9.34 21.9 9.52 21.58 9.52 21.31C9.52 21.07 9.51 20.19 9.51 19.27C6.73 19.88 6.14 18.05 6.14 18.05C5.68 16.87 5.03 16.55 5.03 16.55C4.13 15.93 5.1 15.94 5.1 15.94C6.1 16.01 6.63 16.98 6.63 16.98C7.5 18.51 8.93 18.06 9.5 17.81C9.59 17.16 9.85 16.72 10.13 16.47C7.9 16.22 5.56 15.35 5.56 11.47C5.56 10.36 5.96 9.44 6.65 8.73C6.54 8.48 6.19 7.42 6.75 6.02C6.75 6.02 7.63 5.74 9.5 7.02C10.29 6.8 11.15 6.68 12 6.68C12.85 6.68 13.71 6.8 14.5 7.02C16.37 5.74 17.25 6.02 17.25 6.02C17.81 7.42 17.46 8.48 17.35 8.73C18.04 9.44 18.44 10.36 18.44 11.47C18.44 15.36 16.1 16.22 13.86 16.46C14.22 16.77 14.54 17.37 14.54 18.31C14.54 19.65 14.53 20.97 14.53 21.31C14.53 21.58 14.71 21.9 15.22 21.8C19.19 20.46 22.06 16.68 22.06 12.2C22.06 6.58 17.52 2 12 2Z" fill="#000000"/>
-      </svg>
-    </a>
-    <a href="siena_villancio_resume.pdf" target="_blank" style="font-size: 16px; letter-spacing: 0.3px;">resume/cv</a>
+  <!-- Contact bar — same block on every page; edit them together. -->
+  <footer class="contact">
+    <a href="mailto:karensiena@gmail.com">karensiena@gmail.com</a>
+    <a href="https://www.linkedin.com/in/siena-villancio-wolter/" target="_blank" rel="noopener">linkedin</a>
+    <a href="https://github.com/kvillancio" target="_blank" rel="noopener">github</a>
+    <a href="siena_villancio_resume_website.pdf" target="_blank" rel="noopener">resume / cv</a>
   </footer>
 
   <script>

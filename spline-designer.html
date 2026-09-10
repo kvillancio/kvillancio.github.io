@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siena Villancio-Wolter</title>
+<link rel="stylesheet" href="https://fontlibrary.org/face/anka-coder" type="text/css">
+<!-- Site chrome: nav + contact bar come from the shared stylesheet. -->
+<link rel="stylesheet" href="styles.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { width: 100%; height: 100%; }
+
+  body {
+    padding: 0;              /* no wordmark gutter on the tool pages */
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ---------------- Page content ---------------- */
+  .tool-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 40px 140px 40px;
+  }
+
+  .tool-heading {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-bottom: 6px;
+  }
+  .tool-subheading {
+    font-size: 18px;
+    line-height: 1.55;
+    color: #444444;
+    letter-spacing: 0.2px;
+    max-width: 900px;
+    margin-bottom: 20px;
+  }
+
+  /* Tabs */
+  .tab-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .tab-btn {
+    font-family: inherit;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: 1px solid #cfcfcf;
+    background: #ffffff;
+    color: #555555;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .tab-btn:hover { border-color: #000000; color: #000000; }
+  .tab-btn.active { background: #000000; border-color: #000000; color: #ffffff; }
+  .tab-btn:focus-visible { outline: 2px solid #000000; outline-offset: 2px; }
+
+  /* Designer layout */
+  .designer-grid {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+  .plot-col { flex: 1 1 480px; min-width: 0; }
+  .params-col { flex: 0 0 340px; }
+
+  .plot-toolbar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .tool-btn {
+    font-family: inherit;
+    font-size: 13.5px;
+    letter-spacing: 0.3px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid #000000;
+    background: #ffffff;
+    color: #000000;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .tool-btn:hover { opacity: 0.6; }
+  .tool-btn:active { transform: scale(0.97); }
+  .tool-btn:focus-visible { outline: 2px solid #000000; outline-offset: 2px; }
+
+  .plot-box {
+    background: #efefef;
+    border-radius: 16px;
+    padding: 14px;
+    max-width: 720px;
+  }
+  canvas.plot {
+    display: block;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 10px;
+    touch-action: none;
+  }
+  .plot-status {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #7a7a7a;
+    letter-spacing: 0.2px;
+    min-height: 1.3em;
+  }
+  .plot-status.error { color: #a11f1f; }
+
+  .params-box {
+    background: #efefef;
+    border-radius: 16px;
+    padding: 16px;
+    max-height: 620px;
+    overflow-y: auto;
+  }
+  .params-box h3 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    margin: 14px 0 8px;
+  }
+  .params-box h3:first-child { margin-top: 0; }
+
+  .node-grid {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    gap: 6px 10px;
+    align-items: center;
+  }
+  .sa-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px 10px;
+    align-items: center;
+  }
+  .grid-label {
+    font-size: 12.5px;
+    letter-spacing: 0.2px;
+    color: #555555;
+  }
+  .grid-head {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: #7a7a7a;
+    text-align: center;
+  }
+  .num-input {
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 0.2px;
+    padding: 6px 8px;
+    border-radius: 7px;
+    border: 1px solid #d4d4d4;
+    background: #ffffff;
+    color: #000000;
+    width: 100%;
+    min-width: 74px;
+  }
+  .num-input:focus { outline: 2px solid #000000; outline-offset: 1px; }
+
+  .params-note {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #7a7a7a;
+    letter-spacing: 0.2px;
+    margin-top: 12px;
+  }
+
+  @media (max-width: 820px) {
+    .tool-wrap { padding: 20px 24px 160px 24px; }
+    .designer-grid { flex-direction: column; }
+    .params-col { flex-basis: auto; width: 100%; max-width: 720px; }
+    .params-box { max-height: none; }
+  }
+</style>
+</head>
+
+<body>
+
+  <nav class="nav">
+    <a href="about.html">about</a>
+    <a href="collections.html">collections</a>
+    <a href="tech.html" aria-current="page">tech</a>
+  </nav>
+
+  <div class="tool-wrap">
+    <div class="tool-heading">ANKLE SPLINE DESIGNER</div>
+    <div class="tool-subheading">
+      Design the torque profile an ankle exoskeleton controller commands over a gait cycle.
+      Drag the 12 nodes or type their values, preview the PCHIP curve the firmware will build,
+      then export a <code>spline.csv</code>. The <strong>SplineAlt</strong> tab generates the same
+      kind of curve from shape parameters &mdash; peak torque, timing, and rise / dwell / fall.
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tabSpline" type="button">Spline (12 nodes)</button>
+      <button class="tab-btn" id="tabSplineAlt" type="button">SplineAlt (shape)</button>
+    </div>
+
+    <!-- ============ Spline (12 nodes) ============ -->
+    <section id="splinePanel">
+      <div class="designer-grid">
+        <div class="plot-col">
+          <div class="plot-toolbar">
+            <button class="tool-btn" id="splineOpen" type="button">Open&hellip;</button>
+            <button class="tool-btn" id="splineSave" type="button">Save As&hellip;</button>
+            <button class="tool-btn" id="splineReset" type="button">Reset</button>
+            <input type="file" id="splineFile" accept=".csv" hidden>
+          </div>
+          <div class="plot-box">
+            <canvas class="plot" id="splineCanvas" width="700" height="420"></canvas>
+          </div>
+          <div class="plot-status" id="splineStatus"></div>
+        </div>
+        <div class="params-col">
+          <div class="params-box">
+            <h3>Nodes</h3>
+            <div class="node-grid" id="splineNodeGrid">
+              <span class="grid-label"></span>
+              <span class="grid-head">X (% gait)</span>
+              <span class="grid-head">Y (Nm)</span>
+            </div>
+            <h3>Extra Parameters</h3>
+            <div class="sa-grid" id="splineExtraGrid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SplineAlt (shape) ============ -->
+    <section id="splineAltPanel" hidden>
+      <div class="designer-grid">
+        <div class="plot-col">
+          <div class="plot-toolbar">
+            <button class="tool-btn" id="saOpen" type="button">Open&hellip;</button>
+            <button class="tool-btn" id="saSave" type="button">Save As&hellip;</button>
+            <button class="tool-btn" id="saReset" type="button">Reset</button>
+            <input type="file" id="saFile" accept=".csv" hidden>
+          </div>
+          <div class="plot-box">
+            <canvas class="plot" id="splineAltCanvas" width="700" height="420"></canvas>
+          </div>
+          <div class="plot-status" id="splineAltStatus"></div>
+        </div>
+        <div class="params-col">
+          <div class="params-box">
+            <div id="saParams"></div>
+            <div class="params-note">
+              Torque magnitudes are entered positive; plantarflexion is applied negative
+              internally. The firmware clamps the feed-forward command to &plusmn;15&nbsp;Nm.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Contact bar — same block on every page; edit them together. -->
+  <footer class="contact">
+    <a href="mailto:karensiena@gmail.com">karensiena@gmail.com</a>
+    <a href="https://www.linkedin.com/in/siena-villancio-wolter/" target="_blank" rel="noopener">linkedin</a>
+    <a href="https://github.com/kvillancio" target="_blank" rel="noopener">github</a>
+    <a href="siena_villancio_resume_website.pdf" target="_blank" rel="noopener">resume / cv</a>
+  </footer>
+
+  <script>
+  "use strict";
+
+  /* ============================================================
+     PCHIP interpolation
+     Port of ExoCode/src/Controller.cpp Spline::_pchip_interpolate /
+     _pchip_edge_tangent (via SplineDesigner/spline_math.py). Kept in
+     sync BY HAND with the firmware algorithm so this preview matches
+     what the exoskeleton actually commands.
+     ============================================================ */
+
+  const NODE_X_BOUNDS = [0.0, 100.0];   // percent gait cycle
+  const NODE_Y_BOUNDS = [-100.0, 100.0]; // Nm
+
+  function nodesStrictlyIncreasing(x) {
+    for (let i = 1; i < x.length; i++) if (!(x[i] > x[i - 1])) return false;
+    return true;
+  }
+
+  function pchipEdgeTangent(h0, h1, m0, m1) {
+    const d = ((2.0 * h0 + h1) * m0 - h0 * m1) / (h0 + h1);
+    const signD = d >= 0.0;
+    const signM0 = m0 >= 0.0;
+    if (signD !== signM0) return 0.0;
+    const signM1 = m1 >= 0.0;
+    if (signM0 !== signM1 && Math.abs(d) > 3.0 * Math.abs(m0)) return 3.0 * m0;
+    return d;
+  }
+
+  // Returns { ys, valid }. valid is false when x_nodes is not strictly
+  // increasing, matching the firmware's "return 0 for everything" behaviour.
+  function pchipCurve(xNodes, yNodes, tSamples) {
+    const n = xNodes.length;
+    if (n < 3 || !nodesStrictlyIncreasing(xNodes)) {
+      return { ys: tSamples.map(() => 0.0), valid: false };
+    }
+    const h = [], secant = [];
+    for (let i = 0; i < n - 1; i++) {
+      h.push(xNodes[i + 1] - xNodes[i]);
+      secant.push((yNodes[i + 1] - yNodes[i]) / h[i]);
+    }
+    const m = new Array(n).fill(0.0);
+    for (let i = 1; i < n - 1; i++) {
+      const m0 = secant[i - 1], m1 = secant[i];
+      if (m0 === 0.0 || m1 === 0.0 || (m0 > 0.0) !== (m1 > 0.0)) {
+        m[i] = 0.0;
+      } else {
+        const w1 = 2.0 * h[i] + h[i - 1];
+        const w2 = h[i] + 2.0 * h[i - 1];
+        m[i] = (w1 + w2) / (w1 / m0 + w2 / m1);
+      }
+    }
+    m[0] = pchipEdgeTangent(h[0], h[1], secant[0], secant[1]);
+    m[n - 1] = pchipEdgeTangent(h[n - 2], h[n - 3], secant[n - 2], secant[n - 3]);
+
+    const evalOne = (t) => {
+      if (t <= xNodes[0]) return yNodes[0];
+      if (t >= xNodes[n - 1]) return yNodes[n - 1];
+      let k = 0;
+      for (let i = 0; i < n - 1; i++) {
+        if (xNodes[i] <= t && t <= xNodes[i + 1]) { k = i; break; }
+      }
+      const hk = xNodes[k + 1] - xNodes[k];
+      const s = (t - xNodes[k]) / hk;
+      const s2 = s * s, s3 = s2 * s;
+      const h00 = 2.0 * s3 - 3.0 * s2 + 1.0;
+      const h10 = s3 - 2.0 * s2 + s;
+      const h01 = -2.0 * s3 + 3.0 * s2;
+      const h11 = s3 - s2;
+      return h00 * yNodes[k] + h10 * hk * m[k] + h01 * yNodes[k + 1] + h11 * hk * m[k + 1];
+    };
+    return { ys: tSamples.map(evalOne), valid: true };
+  }
+
+  /* ============================================================
+     SplineAlt: shape-parameter node builder + periodic PCHIP
+     Port of SplineAlt::_build_nodes / _pchip_interpolate
+     (via SplineDesigner/spline_alt_math.py).
+     ============================================================ */
+
+  const SA = {
+    PLANTAR_NM: 0, DORSI_NM: 1, PLANTAR_PK: 2, DORSI_PK: 3,
+    PLANTAR_RISE: 4, PLANTAR_DWELL: 5, PLANTAR_FALL: 6,
+    DORSI_RISE: 7, DORSI_DWELL: 8, DORSI_FALL: 9,
+    TORQUE_SCALE: 10, SIM_GAIT: 11, USE_PCT_GAIT: 12, USE_PID: 13,
+    P_GAIN: 14, I_GAIN: 15, D_GAIN: 16,
+  };
+  const SA_NUM_PARAMS = 17;
+  const SA_MAX_NODES = 12;
+
+  // Matches ExoCode/src/ControllerData.cpp spline_alt_bounds[]: (min, max, integer_only).
+  const SA_PARAM_BOUNDS = [
+    [-50.0, 50.0, false], [-50.0, 50.0, false], [0.0, 100.0, false], [0.0, 100.0, false],
+    [0.0, 100.0, false], [0.0, 100.0, false], [0.0, 100.0, false], [0.0, 100.0, false],
+    [0.0, 100.0, false], [0.0, 100.0, false], [0.0, 100.0, false],
+    [0.0, 1.0, true], [0.0, 1.0, true], [0.0, 1.0, true],
+    [0.0, 10000.0, false], [0.0, 10000.0, false], [0.0, 10000.0, false],
+  ];
+
+  function clampParam(index, value) {
+    const [lo, hi, integerOnly] = SA_PARAM_BOUNDS[index];
+    let v = Math.max(lo, Math.min(Number(value), hi));
+    if (integerOnly) v = Math.round(v);
+    return v;
+  }
+
+  // Port of `fmodf(v, 100); if (v < 0) v += 100;`
+  function wrapMod100(v) {
+    let r = v % 100.0;
+    if (r < 0.0) r += 100.0;
+    return r;
+  }
+
+  function buildRawLobeNodes(p) {
+    const scale = p[SA.TORQUE_SCALE] / 100.0;
+    const amp = [-p[SA.PLANTAR_NM] * scale, p[SA.DORSI_NM] * scale];
+    const peak = [p[SA.PLANTAR_PK], p[SA.DORSI_PK]];
+    const rise = [p[SA.PLANTAR_RISE], p[SA.DORSI_RISE]];
+    const dwell = [p[SA.PLANTAR_DWELL], p[SA.DORSI_DWELL]];
+    const fall = [p[SA.PLANTAR_FALL], p[SA.DORSI_FALL]];
+    const nx = [], ny = [];
+    for (let lobe = 0; lobe < 2; lobe++) {
+      if (amp[lobe] === 0.0) continue; // direction disabled
+      nx.push(peak[lobe] - rise[lobe]); ny.push(0.0);
+      nx.push(peak[lobe]); ny.push(amp[lobe]);
+      if (dwell[lobe] > 0.0) { nx.push(peak[lobe] + dwell[lobe]); ny.push(amp[lobe]); }
+      nx.push(peak[lobe] + dwell[lobe] + fall[lobe]); ny.push(0.0);
+    }
+    return [nx, ny];
+  }
+
+  // Real (non-wrapped) node set, sorted by x. [[], []] for a degenerate profile.
+  function interiorNodes(p) {
+    let [nx, ny] = buildRawLobeNodes(p);
+    if (nx.length < 3) return [[], []];
+    nx = nx.map(wrapMod100);
+    const pairs = nx.map((x, i) => [x, ny[i]]).sort((a, b) => a[0] - b[0]);
+    nx = pairs.map((pp) => pp[0]);
+    ny = pairs.map((pp) => pp[1]);
+    for (let i = 1; i < nx.length; i++) if (nx[i] <= nx[i - 1]) return [[], []];
+    return [nx, ny];
+  }
+
+  // Interior nodes plus two periodic copies on each side (what _pchip_interpolate consumes).
+  function buildExtendedNodes(p) {
+    const [nx, ny] = interiorNodes(p);
+    if (!nx.length) return [[], []];
+    const n = nx.length;
+    const x = [nx[n - 2] - 100.0, nx[n - 1] - 100.0];
+    const y = [ny[n - 2], ny[n - 1]];
+    for (let i = 0; i < n; i++) { x.push(nx[i]); y.push(ny[i]); }
+    x.push(nx[0] + 100.0, nx[1] + 100.0);
+    y.push(ny[0], ny[1]);
+    return [x, y];
+  }
+
+  function saPchipInterpolate(xn, yn, t) {
+    const n = xn.length;
+    if (n < 3 || n > SA_MAX_NODES) return 0.0;
+    for (let i = 1; i < n; i++) if (xn[i] <= xn[i - 1]) return 0.0;
+    if (t <= xn[0]) return yn[0];
+    if (t >= xn[n - 1]) return yn[n - 1];
+
+    const h = [], secant = [];
+    for (let i = 0; i < n - 1; i++) {
+      h.push(xn[i + 1] - xn[i]);
+      secant.push((yn[i + 1] - yn[i]) / h[i]);
+    }
+    const m = new Array(n).fill(0.0);
+    for (let i = 1; i < n - 1; i++) {
+      const m0 = secant[i - 1], m1 = secant[i];
+      if (m0 === 0.0 || m1 === 0.0 || (m0 > 0.0) !== (m1 > 0.0)) {
+        m[i] = 0.0;
+      } else {
+        const w1 = 2.0 * h[i] + h[i - 1];
+        const w2 = h[i] + 2.0 * h[i - 1];
+        m[i] = (w1 + w2) / (w1 / m0 + w2 / m1);
+      }
+    }
+    m[0] = pchipEdgeTangent(h[0], h[1], secant[0], secant[1]);
+    m[n - 1] = pchipEdgeTangent(h[n - 2], h[n - 3], secant[n - 2], secant[n - 3]);
+
+    let k = 0;
+    for (let i = 0; i < n - 1; i++) {
+      if (xn[i] <= t && t <= xn[i + 1]) { k = i; break; }
+    }
+    const hk = xn[k + 1] - xn[k];
+    const s = (t - xn[k]) / hk;
+    const s2 = s * s, s3 = s2 * s;
+    const h00 = 2.0 * s3 - 3.0 * s2 + 1.0;
+    const h10 = s3 - 2.0 * s2 + s;
+    const h01 = -2.0 * s3 + 3.0 * s2;
+    const h11 = s3 - s2;
+    return h00 * yn[k] + h10 * hk * m[k] + h01 * yn[k + 1] + h11 * hk * m[k + 1];
+  }
+
+  function saSampleCurve(p, tSamples) {
+    const [xn, yn] = buildExtendedNodes(p);
+    if (!xn.length) return { ys: tSamples.map(() => 0.0), valid: false };
+    return { ys: tSamples.map((t) => saPchipInterpolate(xn, yn, wrapMod100(t))), valid: true };
+  }
+
+  /* ============================================================
+     CSV load / save
+     ============================================================ */
+
+  function csvParse(text) {
+    const rows = [];
+    let row = [], field = "", inQuotes = false, i = 0;
+    while (i < text.length) {
+      const c = text[i];
+      if (inQuotes) {
+        if (c === '"') {
+          if (text[i + 1] === '"') { field += '"'; i += 2; continue; }
+          inQuotes = false; i++; continue;
+        }
+        field += c; i++; continue;
+      }
+      if (c === '"') { inQuotes = true; i++; continue; }
+      if (c === ",") { row.push(field); field = ""; i++; continue; }
+      if (c === "\r") { i++; continue; }
+      if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
+      field += c; i++;
+    }
+    if (field !== "" || row.length) { row.push(field); rows.push(row); }
+    return rows;
+  }
+
+  function csvStringify(rows) {
+    return rows.map((r) => r.map((cell) => {
+      const s = String(cell);
+      return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }).join(",")).join("\r\n") + "\r\n";
+  }
+
+  // Trims trailing zeros to match spline_csv.py's plain style (0 not 0.0, 20.1 stays 20.1).
+  function fmtValue(v) {
+    if (Number.isInteger(v)) return String(v);
+    return String(parseFloat(Number(v).toPrecision(6)));
+  }
+
+  const SPLINE_HEADER_ROWS = [
+    ["5", "header Size, the first N rows will be ignored, except for this first cells in the first two rows"],
+    ["30", "parameter number, the number of parameters to read per line"],
+    ["", "Parameter list for the  spline controller"],
+    ["", "Parameter order:"],
+  ];
+  const SPLINE_EXTRA_LABELS = ["sim %gait (1=yes)", "1=%gait 0=%stance", "PID Flag", "P Gain", "I Gain", "D Gain"];
+  const SPLINE_CSV_NAMES = (() => {
+    const names = [];
+    for (let i = 1; i <= 12; i++) names.push("Node" + i + "_x", "Node" + i + "_y");
+    return names.concat(["1=sim %gait", "1=%gait 0=%stance", "PID Flag", "P Gain", "I Gain", "D Gain"]);
+  })();
+
+  function loadSplineCsv(text) {
+    const rows = csvParse(text);
+    if (rows.length < 6) throw new Error("expected at least 6 rows, found " + rows.length);
+    const h0 = ((rows[0] && rows[0][0]) || "").trim();
+    if (h0 !== "5") throw new Error("expected header row count '5' in row 1 cell 1, found '" + h0 + "'");
+    const h1 = ((rows[1] && rows[1][0]) || "").trim();
+    if (h1 !== "30") {
+      throw new Error("expected parameter count '30' in row 2 cell 1, found '" + h1 +
+        "' -- is this a splineAlt.csv (17 parameters) rather than a node spline.csv (30)?");
+    }
+    const cells = rows[5].map((c) => c.trim()).filter((c) => c !== "");
+    if (cells.length !== 30) throw new Error("expected 30 values in row 6, found " + cells.length);
+    const vals = cells.map((c) => {
+      const f = Number(c);
+      if (!isFinite(f)) throw new Error("non-numeric value in row 6: " + c);
+      return f;
+    });
+    const x = [], y = [];
+    for (let i = 0; i < 24; i += 2) { x.push(vals[i]); y.push(vals[i + 1]); }
+    return { x, y, extra: vals.slice(24, 30) };
+  }
+
+  function saveSplineCsv(st) {
+    const valueRow = [];
+    for (let i = 0; i < 12; i++) valueRow.push(fmtValue(st.x[i]), fmtValue(st.y[i]));
+    st.extra.forEach((v) => valueRow.push(fmtValue(v)));
+    return csvStringify([...SPLINE_HEADER_ROWS, SPLINE_CSV_NAMES, valueRow]);
+  }
+
+  const SA_CSV_NAMES = [
+    "PlantarNm", "DorsiNm", "PlantarPk", "DorsiPk", "PlantRise", "PlantDwel",
+    "PlantFall", "DorsiRise", "DorsiDwel", "DorsiFall", "TorqScale",
+    "1=sim%gt", "1=%gait", "PID Flag", "P Gain", "I Gain", "D Gain",
+  ];
+  const SA_HEADER_ROWS = [
+    ["5", "header Size, the first N rows will be ignored, except for this first cells in the first two rows"],
+    ["17", "parameter number, the number of parameters to read per line"],
+    ["", "Parameter list for the splineAlt controller. Torque magnitudes are POSITIVE; " +
+      "plantarflexion is applied negative internally. Rise/dwell/fall are durations in " +
+      "percent gait. Dwell 0 = no plateau. A lobe with magnitude 0 is disabled. Lobes " +
+      "may wrap past 100 percent."],
+    ["", "Parameter order:"],
+  ];
+
+  function loadSplineAltCsv(text) {
+    const rows = csvParse(text);
+    if (rows.length < 6) throw new Error("expected at least 6 rows, found " + rows.length);
+    const h0 = ((rows[0] && rows[0][0]) || "").trim();
+    if (h0 !== "5") throw new Error("expected header row count '5' in row 1 cell 1, found '" + h0 + "'");
+    const h1 = ((rows[1] && rows[1][0]) || "").trim();
+    if (h1 !== "17") {
+      throw new Error("expected parameter count '17' in row 2 cell 1, found '" + h1 +
+        "' -- is this a node spline.csv (30 parameters) rather than a splineAlt.csv (17)?");
+    }
+    const cells = rows[5].map((c) => c.trim()).filter((c) => c !== "");
+    if (cells.length !== 17) throw new Error("expected 17 values in row 6, found " + cells.length);
+    return cells.map((c) => {
+      const f = Number(c);
+      if (!isFinite(f)) throw new Error("non-numeric value in row 6: " + c);
+      return f;
+    });
+  }
+
+  function saveSplineAltCsv(params) {
+    const valueRow = params.map((v) => fmtValue(v));
+    return csvStringify([...SA_HEADER_ROWS, SA_CSV_NAMES, valueRow]);
+  }
+
+  function downloadText(filename, text) {
+    const blob = new Blob([text], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  /* ============================================================
+     State (ports NodeState / SplineAltState clamping rules)
+     ============================================================ */
+
+  const DEFAULT_X = [0.0, 5.0, 10.0, 20.0, 20.1, 20.2, 20.3, 20.4, 20.5, 20.6, 20.7, 20.8];
+  const DEFAULT_Y = [0.0, -8.0, -12.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+  const DEFAULT_EXTRA = [0.0, 1.0, 1.0, 6.0, 0.0, 0.03];
+  const X_EPSILON = 0.1; // % gait -- minimum gap enforced between adjacent node x-values
+
+  const DEFAULT_SA_PARAMS = [15.0, 5.0, 50.0, 95.0, 26.0, 0.0, 17.0, 11.0, 0.0, 9.0,
+    100.0, 0.0, 1.0, 1.0, 3.0, 0.0, 0.01];
+
+  const splineState = { x: DEFAULT_X.slice(), y: DEFAULT_Y.slice(), extra: DEFAULT_EXTRA.slice() };
+  const splineAltState = { params: DEFAULT_SA_PARAMS.map((v, i) => clampParam(i, v)) };
+
+  function splineSetX(index, newX) {
+    const lo = index === 0 ? NODE_X_BOUNDS[0] : splineState.x[index - 1] + X_EPSILON;
+    const hi = index === splineState.x.length - 1 ? NODE_X_BOUNDS[1] : splineState.x[index + 1] - X_EPSILON;
+    splineState.x[index] = Math.max(lo, Math.min(newX, hi));
+  }
+  function splineSetY(index, newY) {
+    splineState.y[index] = Math.max(NODE_Y_BOUNDS[0], Math.min(newY, NODE_Y_BOUNDS[1]));
+  }
+
+  /* ============================================================
+     Plot rendering (canvas)
+     ============================================================ */
+
+  function linspace(a, b, n) {
+    return Array.from({ length: n }, (_, i) => a + (i * (b - a)) / (n - 1));
+  }
+
+  // Port of _update_y_range: fit the values, padded and centred so negative
+  // torque shows as readily as positive. emptyMode picks the fallback range.
+  function yRange(values, minSpan, emptyMode) {
+    if (!values.length) {
+      return emptyMode === "bounds" ? NODE_Y_BOUNDS.slice() : [-minSpan, minSpan];
+    }
+    const lo = Math.min(...values), hi = Math.max(...values);
+    const span = Math.max(hi - lo, minSpan);
+    const pad = span * 0.1;
+    const mid = (lo + hi) / 2.0;
+    const half = span / 2.0 + pad;
+    return [mid - half, mid + half];
+  }
+
+  function formatTick(v) {
+    if (Math.abs(v) < 1e-9) return "0";
+    return Math.abs(v - Math.round(v)) < 0.05 ? String(Math.round(v)) : v.toFixed(1);
+  }
+
+  const FONT_SM = '11px -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif';
+  const FONT_MD = '12px -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif';
+  const CURVE_COLOR = "#0078D4";
+
+  function drawPlot(canvas, opts) {
+    const cw = canvas.clientWidth;
+    if (!cw) return; // panel hidden -- redrawn on tab show
+    const dpr = window.devicePixelRatio || 1;
+    const W = cw;
+    const H = Math.round(W * 0.6);
+    canvas.style.height = H + "px";
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+
+    const M = { left: 56, right: 18, top: 16, bottom: 42 };
+    const plotW = W - M.left - M.right;
+    const plotH = H - M.top - M.bottom;
+    const [xmin, xmax] = NODE_X_BOUNDS;
+    const { xs, ys, nodes, ymin, ymax, draggable } = opts;
+
+    const xToPx = (x) => M.left + ((x - xmin) / (xmax - xmin)) * plotW;
+    const yToPx = (y) => M.top + ((ymax - y) / (ymax - ymin)) * plotH;
+    const pxToX = (px) => xmin + ((px - M.left) / plotW) * (xmax - xmin);
+    const pxToY = (px) => ymax - ((px - M.top) / plotH) * (ymax - ymin);
+    canvas._tx = { xToPx, yToPx, pxToX, pxToY };
+
+    // grid + tick labels
+    ctx.strokeStyle = "#e6e6e6";
+    ctx.lineWidth = 1;
+    ctx.fillStyle = "#8a8a8a";
+    ctx.font = FONT_SM;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    for (let gx = 0; gx <= 100; gx += 10) {
+      const px = xToPx(gx);
+      ctx.beginPath(); ctx.moveTo(px, M.top); ctx.lineTo(px, M.top + plotH); ctx.stroke();
+      ctx.fillText(String(gx), px, M.top + plotH + 7);
+    }
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+    const yTicks = 6;
+    for (let i = 0; i <= yTicks; i++) {
+      const yv = ymin + ((ymax - ymin) * i) / yTicks;
+      const py = yToPx(yv);
+      ctx.beginPath(); ctx.moveTo(M.left, py); ctx.lineTo(M.left + plotW, py); ctx.stroke();
+      ctx.fillText(formatTick(yv), M.left - 8, py);
+    }
+    // zero line
+    if (ymin < 0 && ymax > 0) {
+      ctx.strokeStyle = "#bdbdbd";
+      ctx.lineWidth = 1.4;
+      const pz = yToPx(0);
+      ctx.beginPath(); ctx.moveTo(M.left, pz); ctx.lineTo(M.left + plotW, pz); ctx.stroke();
+    }
+
+    // axis titles
+    ctx.fillStyle = "#555555";
+    ctx.font = FONT_MD;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    ctx.fillText("Percent Gait Cycle (%)", M.left + plotW / 2, H - 2);
+    ctx.save();
+    ctx.translate(13, M.top + plotH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textBaseline = "top";
+    ctx.fillText("Torque (Nm)", 0, 0);
+    ctx.restore();
+
+    // curve + nodes, clipped to the plot area
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(M.left, M.top, plotW, plotH);
+    ctx.clip();
+
+    ctx.strokeStyle = CURVE_COLOR;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    for (let i = 0; i < xs.length; i++) {
+      const px = xToPx(xs[i]), py = yToPx(ys[i]);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    nodes.forEach((nd) => {
+      const px = xToPx(nd.x), py = yToPx(nd.y);
+      ctx.beginPath();
+      ctx.arc(px, py, draggable ? 6 : 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff";
+      ctx.fill();
+      ctx.strokeStyle = CURVE_COLOR;
+      ctx.lineWidth = draggable ? 2 : 1.5;
+      ctx.stroke();
+      if (nd.label) {
+        ctx.fillStyle = CURVE_COLOR;
+        ctx.font = "10px -apple-system, BlinkMacSystemFont, Arial, sans-serif";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(nd.label, px + 7, py - 5);
+      }
+    });
+    ctx.restore();
+
+    ctx.strokeStyle = "#cfcfcf";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(M.left + 0.5, M.top + 0.5, plotW - 1, plotH - 1);
+  }
+
+  /* ============================================================
+     DOM helpers
+     ============================================================ */
+
+  let updating = false; // guards change handlers while syncing inputs from state
+
+  function el(tag, cls, text) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function numInput(min, max, step) {
+    const n = el("input", "num-input");
+    n.type = "number";
+    n.inputMode = "decimal";
+    n.min = String(min);
+    n.max = String(max);
+    n.step = String(step);
+    return n;
+  }
+  // toFixed then trim trailing zeros (and a bare trailing dot).
+  function fmtNum(v, dec) {
+    let s = Number(v).toFixed(dec);
+    if (s.indexOf(".") >= 0) s = s.replace(/0+$/, "").replace(/\.$/, "");
+    return s;
+  }
+  function setStatus(node, msg, isError) {
+    node.textContent = msg;
+    node.classList.toggle("error", !!isError);
+  }
+
+  /* ============================================================
+     Spline (12 nodes) tab
+     ============================================================ */
+
+  const splineCanvas = document.getElementById("splineCanvas");
+  const splineStatus = document.getElementById("splineStatus");
+  const splineNodeGrid = document.getElementById("splineNodeGrid");
+  const splineExtraGrid = document.getElementById("splineExtraGrid");
+
+  const xInputs = [], yInputs = [], extraInputs = [];
+
+  for (let i = 0; i < 12; i++) {
+    splineNodeGrid.append(el("span", "grid-label", "Node " + (i + 1)));
+    const xi = numInput(NODE_X_BOUNDS[0], NODE_X_BOUNDS[1], 0.5);
+    const yi = numInput(NODE_Y_BOUNDS[0], NODE_Y_BOUNDS[1], 0.5);
+    xInputs.push(xi); yInputs.push(yi);
+    splineNodeGrid.append(xi, yi);
+    xi.addEventListener("change", () => {
+      if (updating) return;
+      const v = parseFloat(xi.value);
+      if (Number.isFinite(v)) splineSetX(i, v);
+      renderSpline();
+    });
+    yi.addEventListener("change", () => {
+      if (updating) return;
+      const v = parseFloat(yi.value);
+      if (Number.isFinite(v)) splineSetY(i, v);
+      renderSpline();
+    });
+  }
+
+  SPLINE_EXTRA_LABELS.forEach((label, i) => {
+    splineExtraGrid.append(el("span", "grid-label", label));
+    const inp = numInput(-1000, 1000, 0.001);
+    extraInputs.push(inp);
+    splineExtraGrid.append(inp);
+    inp.addEventListener("change", () => {
+      if (updating) return;
+      const v = parseFloat(inp.value);
+      if (Number.isFinite(v)) splineState.extra[i] = v; // matches _on_extra_spin_changed: no clamp
+      renderSpline();
+    });
+  });
+
+  function syncSplineInputs() {
+    updating = true;
+    for (let i = 0; i < 12; i++) {
+      xInputs[i].value = fmtNum(splineState.x[i], 2);
+      yInputs[i].value = fmtNum(splineState.y[i], 2);
+    }
+    for (let i = 0; i < extraInputs.length; i++) {
+      extraInputs[i].value = fmtNum(splineState.extra[i], 3);
+    }
+    updating = false;
+  }
+
+  function renderSpline() {
+    syncSplineInputs();
+    const xs = linspace(NODE_X_BOUNDS[0], NODE_X_BOUNDS[1], 200);
+    const { ys, valid } = pchipCurve(splineState.x, splineState.y, xs);
+    const [ymin, ymax] = yRange(ys.concat(splineState.y), 4.0, "bounds");
+    drawPlot(splineCanvas, {
+      xs, ys, ymin, ymax, draggable: true,
+      nodes: splineState.x.map((x, i) => ({ x, y: splineState.y[i], label: String(i + 1) })),
+    });
+    setStatus(splineStatus, valid ? "" : "Invalid node order (should be unreachable via this UI)", !valid);
+  }
+
+  // Dragging snaps to whole % gait / Nm; typing into the inputs still accepts decimals.
+  let splineDragIdx = -1;
+  splineCanvas.addEventListener("pointerdown", (e) => {
+    const tx = splineCanvas._tx;
+    if (!tx) return;
+    const r = splineCanvas.getBoundingClientRect();
+    const mx = e.clientX - r.left, my = e.clientY - r.top;
+    let best = -1, bestD = 15;
+    for (let i = 0; i < 12; i++) {
+      const d = Math.hypot(tx.xToPx(splineState.x[i]) - mx, tx.yToPx(splineState.y[i]) - my);
+      if (d < bestD) { bestD = d; best = i; }
+    }
+    if (best >= 0) {
+      splineDragIdx = best;
+      splineCanvas.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    }
+  });
+  splineCanvas.addEventListener("pointermove", (e) => {
+    if (splineDragIdx < 0) return;
+    const tx = splineCanvas._tx;
+    const r = splineCanvas.getBoundingClientRect();
+    splineSetX(splineDragIdx, Math.round(tx.pxToX(e.clientX - r.left)));
+    splineSetY(splineDragIdx, Math.round(tx.pxToY(e.clientY - r.top)));
+    renderSpline();
+  });
+  const endSplineDrag = () => { splineDragIdx = -1; };
+  splineCanvas.addEventListener("pointerup", endSplineDrag);
+  splineCanvas.addEventListener("pointercancel", endSplineDrag);
+
+  document.getElementById("splineOpen").addEventListener("click", () => {
+    document.getElementById("splineFile").click();
+  });
+  document.getElementById("splineFile").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const { x, y, extra } = loadSplineCsv(String(reader.result));
+        splineState.x = x; splineState.y = y; splineState.extra = extra;
+        renderSpline();
+        setStatus(splineStatus, "Loaded " + file.name);
+      } catch (err) {
+        setStatus(splineStatus, "Failed to open file: " + err.message, true);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  });
+  document.getElementById("splineSave").addEventListener("click", () => {
+    downloadText("spline.csv", saveSplineCsv(splineState));
+    setStatus(splineStatus, "Saved spline.csv");
+  });
+  document.getElementById("splineReset").addEventListener("click", () => {
+    splineState.x = DEFAULT_X.slice();
+    splineState.y = DEFAULT_Y.slice();
+    splineState.extra = DEFAULT_EXTRA.slice();
+    renderSpline();
+    setStatus(splineStatus, "Reset to defaults");
+  });
+
+  /* ============================================================
+     SplineAlt (shape) tab
+     ============================================================ */
+
+  const splineAltCanvas = document.getElementById("splineAltCanvas");
+  const splineAltStatus = document.getElementById("splineAltStatus");
+  const saParams = document.getElementById("saParams");
+
+  // (section title, [ (label, param index, decimals, step) ... ]) -- from _PARAM_SECTIONS.
+  const SA_SECTIONS = [
+    ["Plantarflexion", [
+      ["Peak torque (Nm, positive)", 0, 1, 1],
+      ["Peak time (% gait)", 2, 1, 1],
+      ["Rise (% gait)", 4, 1, 1],
+      ["Dwell (% gait, 0 = none)", 5, 1, 1],
+      ["Fall (% gait)", 6, 1, 1],
+    ]],
+    ["Dorsiflexion", [
+      ["Peak torque (Nm, positive)", 1, 1, 1],
+      ["Peak time (% gait)", 3, 1, 1],
+      ["Rise (% gait)", 7, 1, 1],
+      ["Dwell (% gait, 0 = none)", 8, 1, 1],
+      ["Fall (% gait)", 9, 1, 1],
+    ]],
+    ["Global", [
+      ["Torque scale (%)", 10, 1, 5],
+    ]],
+    ["Simulation & PID", [
+      ["Simulate %gait (1 = yes)", 11, 0, 1],
+      ["1 = %gait, 0 = %stance", 12, 0, 1],
+      ["PID flag (1 = on)", 13, 0, 1],
+      ["P Gain", 14, 3, 0.1],
+      ["I Gain", 15, 3, 0.1],
+      ["D Gain", 16, 3, 0.001],
+    ]],
+  ];
+
+  const saInputs = new Array(SA_NUM_PARAMS);
+  const saDecimals = new Array(SA_NUM_PARAMS);
+
+  SA_SECTIONS.forEach(([title, rows]) => {
+    saParams.append(el("h3", null, title));
+    const grid = el("div", "sa-grid");
+    rows.forEach(([label, idx, dec, step]) => {
+      saDecimals[idx] = dec;
+      grid.append(el("span", "grid-label", label));
+      const [lo, hi] = SA_PARAM_BOUNDS[idx];
+      const inp = numInput(lo, hi, step);
+      saInputs[idx] = inp;
+      grid.append(inp);
+      inp.addEventListener("change", () => {
+        if (updating) return;
+        const v = parseFloat(inp.value);
+        if (Number.isFinite(v)) splineAltState.params[idx] = clampParam(idx, v);
+        renderSplineAlt(); // re-sync reflects any clamp back into the field
+      });
+    });
+    saParams.append(grid);
+  });
+
+  function syncSplineAltInputs() {
+    updating = true;
+    for (let i = 0; i < SA_NUM_PARAMS; i++) {
+      saInputs[i].value = fmtNum(splineAltState.params[i], saDecimals[i]);
+    }
+    updating = false;
+  }
+
+  function renderSplineAlt() {
+    syncSplineAltInputs();
+    const xs = linspace(NODE_X_BOUNDS[0], NODE_X_BOUNDS[1], 400);
+    const { ys, valid } = saSampleCurve(splineAltState.params, xs);
+    const [nx, ny] = interiorNodes(splineAltState.params);
+    const [ymin, ymax] = yRange(ys.concat(ny), 4.0, "span");
+    drawPlot(splineAltCanvas, {
+      xs, ys, ymin, ymax, draggable: false,
+      nodes: nx.map((x, i) => ({ x, y: ny[i] })),
+    });
+    if (valid) {
+      setStatus(splineAltStatus,
+        "Built " + nx.length + " nodes (" + (nx.length + 4) + " with the periodic wrap-around copies).");
+    } else {
+      setStatus(splineAltStatus,
+        "Degenerate profile — the firmware would command zero torque. Every active lobe needs " +
+        "rise > 0 and fall > 0, and the two lobes must not share a node position.", true);
+    }
+  }
+
+  document.getElementById("saOpen").addEventListener("click", () => {
+    document.getElementById("saFile").click();
+  });
+  document.getElementById("saFile").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const params = loadSplineAltCsv(String(reader.result));
+        splineAltState.params = params.map((v, i) => clampParam(i, v));
+        renderSplineAlt();
+        setStatus(splineAltStatus, "Loaded " + file.name);
+      } catch (err) {
+        setStatus(splineAltStatus, "Failed to open file: " + err.message, true);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  });
+  document.getElementById("saSave").addEventListener("click", () => {
+    downloadText("splineAlt.csv", saveSplineAltCsv(splineAltState.params));
+    setStatus(splineAltStatus, "Saved splineAlt.csv");
+  });
+  document.getElementById("saReset").addEventListener("click", () => {
+    splineAltState.params = DEFAULT_SA_PARAMS.map((v, i) => clampParam(i, v));
+    renderSplineAlt();
+    setStatus(splineAltStatus, "Reset to defaults");
+  });
+
+  /* ============================================================
+     Tabs + resize
+     ============================================================ */
+
+  const tabSpline = document.getElementById("tabSpline");
+  const tabSplineAlt = document.getElementById("tabSplineAlt");
+  const splinePanel = document.getElementById("splinePanel");
+  const splineAltPanel = document.getElementById("splineAltPanel");
+  let activeTab = "spline";
+
+  function setTab(name) {
+    activeTab = name;
+    splinePanel.hidden = name !== "spline";
+    splineAltPanel.hidden = name !== "splinealt";
+    tabSpline.classList.toggle("active", name === "spline");
+    tabSplineAlt.classList.toggle("active", name === "splinealt");
+    if (name === "spline") renderSpline(); else renderSplineAlt();
+  }
+  tabSpline.addEventListener("click", () => setTab("spline"));
+  tabSplineAlt.addEventListener("click", () => setTab("splinealt"));
+
+  let resizeTimer = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (activeTab === "spline") renderSpline(); else renderSplineAlt();
+    }, 100);
+  });
+
+  renderSpline();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research — Siena Villancio-Wolter</title>
+<meta name="description" content="Research projects: powered ankle exoskeletons, control parameter optimization, inverse kinematics, and biomechanics data visualization.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="wordmark">
+  <a class="wordmark__text" href="index.html">Siena Villancio-Wolter</a>
+</div>
+
+<nav class="nav">
+  <a href="about.html">about</a>
+  <a href="collections.html">collections</a>
+  <a href="tech.html" aria-current="page">tech</a>
+</nav>
+
+<main class="page">
+
+  <!-- ===== Tech index =====
+       Items alternate left / right automatically by position, so a
+       new project is one pasted <article> block — no class to set.
+       The id is what index.html links to (tech_research.html#the-id),
+       which opens that project with its description showing. -->
+
+  <div class="works">
+
+    <article class="work" id="myo-exo">
+      <button class="work__toggle" type="button"
+              aria-expanded="false" aria-controls="desc-myo-exo">
+        <img src="images/dephy.png" alt="Two powered ankle exoskeletons strapped to a participant&rsquo;s lower legs.">
+        <span class="work__name">Muscle-controlled ankle exoskeleton</span>
+      </button>
+      <div class="work__desc" id="desc-myo-exo">
+        <p class="todo">[Description coming soon]</p>
+      </div>
+    </article>
+
+    <article class="work" id="inverse-kinematics">
+      <button class="work__toggle" type="button"
+              aria-expanded="false" aria-controls="desc-inverse-kinematics">
+        <img src="images/markers.png" alt="Lower-body inertial measurement unit placement configuration on a participant.">
+        <span class="work__name">Inverse kinematics sensor pipeline comparison</span>
+      </button>
+      <div class="work__desc" id="desc-inverse-kinematics">
+        <p class="todo">[Description coming soon]</p>
+      </div>
+    </article>
+
+    <article class="work" id="control-optimization">
+      <button class="work__toggle" type="button"
+              aria-expanded="false" aria-controls="desc-control-optimization">
+        <img src="images/heatmap_grid_adobe.png" alt="Grid of heatmaps showing user outcomes across exoskeleton control parameter settings.">
+        <span class="work__name">Exoskeleton control parameter optimization</span>
+      </button>
+      <div class="work__desc" id="desc-control-optimization">
+        <p class="todo">[Description coming soon]</p>
+      </div>
+    </article>
+
+    <article class="work" id="data-exploration">
+      <button class="work__toggle" type="button"
+              aria-expanded="false" aria-controls="desc-data-exploration">
+        <img src="images/dataviz.png" alt="Interactive plots of human biomechanics data from treadmill walking with a powered ankle exoskeleton.">
+        <span class="work__name">Interactive large scale data exploration tool</span>
+      </button>
+      <div class="work__desc" id="desc-data-exploration">
+        <p class="todo">[Description coming soon]</p>
+      </div>
+    </article>
+
+    <!-- Paste to add a project:
+    <article class="work" id="your-id">
+      <button class="work__toggle" type="button"
+              aria-expanded="false" aria-controls="desc-your-id">
+        <img src="images/your-image.png" alt="Describe the image.">
+        <span class="work__name">Project name</span>
+      </button>
+      <div class="work__desc" id="desc-your-id">
+        <p>Description.</p>
+      </div>
+    </article>
+    -->
+
+  </div>
+
+</main>
+
+<script>
+(function () {
+  var works = Array.prototype.slice.call(document.querySelectorAll('.work'));
+
+  function open(work, only) {
+    if (only) {
+      works.forEach(function (other) {
+        if (other !== work) {
+          other.classList.remove('is-open');
+          other.querySelector('.work__toggle').setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+    var isOpen = work.classList.toggle('is-open');
+    work.querySelector('.work__toggle').setAttribute('aria-expanded', String(isOpen));
+  }
+
+  works.forEach(function (work) {
+    work.querySelector('.work__toggle').addEventListener('click', function () {
+      open(work, true);
+    });
+  });
+
+  // Arriving from the home carousel: open the linked project.
+  function openFromHash() {
+    var id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id) return;
+    var work = document.getElementById(id);
+    if (!work || !work.classList.contains('work')) return;
+    works.forEach(function (other) {
+      other.classList.remove('is-open');
+      other.querySelector('.work__toggle').setAttribute('aria-expanded', 'false');
+    });
+    work.classList.add('is-open');
+    work.querySelector('.work__toggle').setAttribute('aria-expanded', 'true');
+    work.scrollIntoView({ block: 'center' });
+  }
+
+  window.addEventListener('hashchange', openFromHash);
+  openFromHash();
+}());
+</script>
+
+<!-- Contact bar — same block on every page; edit them together. -->
+<footer class="contact">
+  <a href="mailto:karensiena@gmail.com">karensiena@gmail.com</a>
+  <a href="https://www.linkedin.com/in/siena-villancio-wolter/" target="_blank" rel="noopener">linkedin</a>
+  <a href="https://github.com/kvillancio" target="_blank" rel="noopener">github</a>
+  <a href="siena_villancio_resume_website.pdf" target="_blank" rel="noopener">resume / cv</a>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apps — Siena Villancio-Wolter</title>
+<meta name="description" content="Small self-contained web tools: an ankle spline designer and an accessible color scheme generator.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="wordmark">
+  <a class="wordmark__text" href="index.html">Siena Villancio-Wolter</a>
+</div>
+
+<nav class="nav">
+  <a href="about.html">about</a>
+  <a href="collections.html">collections</a>
+  <a href="tech.html" aria-current="page">tech</a>
+</nav>
+
+<main class="page">
+
+  <!-- ===== Tech index =====
+       Items alternate left / right automatically by position, so a
+       new project is one pasted <article> block — no class to set.
+       The id is what index.html links to (tech_apps.html#the-id),
+       which opens that project with its description showing. -->
+
+  <div class="works">
+
+    <article class="work" id="color-generator">
+      <button class="work__toggle" type="button"
+              aria-expanded="false" aria-controls="desc-color-generator">
+        <img src="images/color_combo.png" alt="Generated color combinations shown with their contrast ratios.">
+        <span class="work__name">Accessible color scheme generator</span>
+      </button>
+      <div class="work__desc" id="desc-color-generator">
+        <p class="todo">[Description coming soon]</p>
+      </div>
+    </article>
+
+    <article class="work" id="spline-designer">
+      <button class="work__toggle" type="button"
+              aria-expanded="false" aria-controls="desc-spline-designer">
+        <img src="images/spline_app.png" alt="Editor showing an ankle exoskeleton torque curve with draggable spline nodes.">
+        <span class="work__name">Ankle spline designer</span>
+      </button>
+      <div class="work__desc" id="desc-spline-designer">
+        <p class="todo">[Description coming soon]</p>
+      </div>
+    </article>
+
+
+    <!-- Paste to add a project:
+    <article class="work" id="your-id">
+      <button class="work__toggle" type="button"
+              aria-expanded="false" aria-controls="desc-your-id">
+        <img src="images/your-image.png" alt="Describe the image.">
+        <span class="work__name">Project name</span>
+      </button>
+      <div class="work__desc" id="desc-your-id">
+        <p>Description.</p>
+      </div>
+    </article>
+    -->
+
+  </div>
+
+</main>
+
+<script>
+(function () {
+  var works = Array.prototype.slice.call(document.querySelectorAll('.work'));
+
+  function open(work, only) {
+    if (only) {
+      works.forEach(function (other) {
+        if (other !== work) {
+          other.classList.remove('is-open');
+          other.querySelector('.work__toggle').setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+    var isOpen = work.classList.toggle('is-open');
+    work.querySelector('.work__toggle').setAttribute('aria-expanded', String(isOpen));
+  }
+
+  works.forEach(function (work) {
+    work.querySelector('.work__toggle').addEventListener('click', function () {
+      open(work, true);
+    });
+  });
+
+  // Arriving from the home carousel: open the linked project.
+  function openFromHash() {
+    var id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id) return;
+    var work = document.getElementById(id);
+    if (!work || !work.classList.contains('work')) return;
+    works.forEach(function (other) {
+      other.classList.remove('is-open');
+      other.querySelector('.work__toggle').setAttribute('aria-expanded', 'false');
+    });
+    work.classList.add('is-open');
+    work.querySelector('.work__toggle').setAttribute('aria-expanded', 'true');
+    work.scrollIntoView({ block: 'center' });
+  }
+
+  window.addEventListener('hashchange', openFromHash);
+  openFromHash();
+}());
+</script>
+
+<!-- Contact bar — same block on every page; edit them together. -->
+<footer class="contact">
+  <a href="mailto:karensiena@gmail.com">karensiena@gmail.com</a>
+  <a href="https://www.linkedin.com/in/siena-villancio-wolter/" target="_blank" rel="noopener">linkedin</a>
+  <a href="https://github.com/kvillancio" target="_blank" rel="noopener">github</a>
+  <a href="siena_villancio_resume_website.pdf" target="_blank" rel="noopener">resume / cv</a>
+</footer>
+
+</body>
+</html>

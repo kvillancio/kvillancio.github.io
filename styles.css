@@ -1,5 +1,5 @@
 /* ============================================================
-   Siena Villancio-Wolter — v5
+   Siena Villancio-Wolter
    Built from WEBSITE_DESIGN.pptx.
 
    Palette is achromatic on purpose: the photographs carry all
@@ -23,12 +23,21 @@
 
   /* How far the right-hand column rides up into the left one.
      Taken from the deck: right item starts before left ends. */
-  --stagger: 120px;
+  --stagger: 110px;
 
   /* Photos on the tech index are capped, not fixed: each one keeps its own
-     aspect ratio inside this box, and the column shrinks to fit it. */
-  --work-photo-w: min(340px, 34vw);
-  --work-photo-h: clamp(200px, 26vw, 300px);
+     aspect ratio inside this box, and the column shrinks to fit it.
+     Sized in cqw against .works so the photo, its side margin, the gap and
+     the description share one width budget — see the row budget below. */
+  --work-photo-w: min(300px, 25cqw);
+  --work-photo-h: clamp(300px, 21cqw, 250px);
+
+  /* The row budget: 2*(edge + photo + gap) + desc must stay under 100cqw,
+     which is what keeps a description clear of the opposite photo.
+     Currently 2*(4 + 25 + 3) + 33 = 97. Adjust one, re-check the sum. */
+  --work-edge: clamp(0px, 4cqw, 70px);
+  --work-gap:  clamp(20px, 3cqw, 40px);
+  --work-desc-w: min(380px, 33cqw);
 
   /* Same native system stack as index.html: San Francisco on macOS,
      Segoe UI on Windows. No web font, no network request. */
@@ -220,20 +229,23 @@ a   { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transp
 .works {
   margin-top: 64px;
   position: relative;
+  /* Everything in a row is measured against this box, not the viewport, so
+     the budget above holds at every width instead of only the widest. */
+  container-type: inline-size;
 }
 
 .work {
   position: relative;
   width: max-content;
-  margin-bottom: 70px;
+  margin-bottom: 96px;
 }
 
 /* Alternation is positional, so adding a project is one pasted
    block with no class to remember. */
-.work:nth-child(odd)  { margin-left: clamp(0px, 6vw, 90px); }
+.work:nth-child(odd)  { margin-left: var(--work-edge); }
 .work:nth-child(even) {
   margin-left: auto;
-  margin-right: clamp(0px, 6vw, 90px);
+  margin-right: var(--work-edge);
   margin-top: calc(-1 * var(--stagger));
 }
 
@@ -270,8 +282,7 @@ a   { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transp
 .work__desc {
   position: absolute;
   top: 0;
-  width: 400px;
-  max-width: 42vw;
+  width: var(--work-desc-w);
   opacity: 0;
   visibility: hidden;
   transform: translateY(8px);
@@ -280,8 +291,8 @@ a   { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transp
   text-align: left;
 }
 
-.work:nth-child(odd)  .work__desc { left:  calc(100% + 28px); }
-.work:nth-child(even) .work__desc { right: calc(100% + 28px); }
+.work:nth-child(odd)  .work__desc { left:  calc(100% + var(--work-gap)); }
+.work:nth-child(even) .work__desc { right: calc(100% + var(--work-gap)); }
 
 .work.is-open .work__desc {
   opacity: 1;
@@ -296,6 +307,52 @@ a   { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transp
     visibility: visible;
     transform: none;
   }
+}
+
+/* Tech landing: the three categories side by side, level with each
+   other — no stagger here, the row is the whole page. */
+
+.categories {
+  display: flex;
+  justify-content: center;
+  /* Tiles hang from a shared bottom edge: the three photos sit on one
+     baseline and the names below them line up, however tall each photo
+     turns out to be. */
+  align-items: flex-end;
+  gap: clamp(24px, 5vw, 70px);
+  flex-wrap: wrap;
+  margin-top: clamp(50px, 10vh, 100px);
+}
+
+.category {
+  flex: 0 1 300px;
+  text-align: center;
+}
+
+/* Capped rather than fixed, so each photo keeps its own aspect ratio.
+   Heights differ; align-items above is what levels them at the foot. */
+.category img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: clamp(220px, 30vw, 340px);
+  margin: 0 auto;
+}
+
+.category__name {
+  display: block;
+  font-size: 17px;
+  margin-top: 16px;
+  min-height: 1.55em;   /* one line, so a wrap never breaks the baseline */
+}
+
+.category:hover .category__name,
+.category:focus-visible .category__name { font-weight: 600; }
+
+@media (max-width: 880px) {
+  .categories { margin-top: 40px; gap: 44px; }
+  .category   { flex: 0 1 min(280px, 78vw); }
+  .category img { max-height: 50vh; }
 }
 
 /* Collections index: two-up, no description reveal (deck slide 6) */

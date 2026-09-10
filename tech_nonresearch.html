@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Non-research — Siena Villancio-Wolter</title>
+<meta name="description" content="Non-research projects: canine prostheses, accessible technology adaptations, paper circuit art lessons, and a gesture-based sensor glove.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="wordmark">
+  <a class="wordmark__text" href="index.html">Siena Villancio-Wolter</a>
+</div>
+
+<nav class="nav">
+  <a href="about.html">about</a>
+  <a href="collections.html">collections</a>
+  <a href="tech.html" aria-current="page">tech</a>
+</nav>
+
+<main class="page">
+
+  <!-- ===== Tech index =====
+       Items alternate left / right automatically by position, so a
+       new project is one pasted <article> block — no class to set.
+       The id is what index.html links to (tech_nonresearch.html#the-id),
+       which opens that project with its description showing. -->
+
+  <div class="works">
+
+    <article class="work" id="paper-circuit">
+      <button class="work__toggle" type="button"
+              aria-expanded="false" aria-controls="desc-paper-circuit">
+        <img src="images/robot_art.png" alt="Robot cut from purple paper on a pink sheet, with a red heart and two yellow LED eyes.">
+        <span class="work__name">Paper circuit art lesson</span>
+      </button>
+      <div class="work__desc" id="desc-paper-circuit">
+        <p class="todo">[Description coming soon]</p>
+      </div>
+    </article>
+
+    <article class="work" id="canine-prostheses">
+      <button class="work__toggle" type="button"
+              aria-expanded="false" aria-controls="desc-canine-prostheses">
+        <img src="images/jordyfoot.png" alt="Dog wearing a 3D-printed prosthetic leg.">
+        <span class="work__name">Canine prosthetic limb design and development</span>
+      </button>
+      <div class="work__desc" id="desc-canine-prostheses">
+        <p class="todo">[Description coming soon]</p>
+      </div>
+    </article>
+
+    <article class="work" id="sensor-glove">
+      <button class="work__toggle" type="button"
+              aria-expanded="false" aria-controls="desc-sensor-glove">
+        <img src="images/glove.png" alt="Glove fitted with pressure sensors at the fingertips.">
+        <span class="work__name">Gesture-based sensor glove</span>
+      </button>
+      <div class="work__desc" id="desc-sensor-glove">
+        <p class="todo">[Description coming soon]</p>
+      </div>
+    </article>
+
+    <article class="work" id="accessible-tech">
+      <button class="work__toggle" type="button"
+              aria-expanded="false" aria-controls="desc-accessible-tech">
+        <img src="images/gobabygo.png" alt="Ride-on toy jeep adapted with an accessible push-button control.">
+        <span class="work__name">Accessible tech adaptations</span>
+      </button>
+      <div class="work__desc" id="desc-accessible-tech">
+        <p class="todo">[Description coming soon]</p>
+      </div>
+    </article>
+
+    <!-- Paste to add a project:
+    <article class="work" id="your-id">
+      <button class="work__toggle" type="button"
+              aria-expanded="false" aria-controls="desc-your-id">
+        <img src="images/your-image.png" alt="Describe the image.">
+        <span class="work__name">Project name</span>
+      </button>
+      <div class="work__desc" id="desc-your-id">
+        <p>Description.</p>
+      </div>
+    </article>
+    -->
+
+  </div>
+
+</main>
+
+<script>
+(function () {
+  var works = Array.prototype.slice.call(document.querySelectorAll('.work'));
+
+  function open(work, only) {
+    if (only) {
+      works.forEach(function (other) {
+        if (other !== work) {
+          other.classList.remove('is-open');
+          other.querySelector('.work__toggle').setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+    var isOpen = work.classList.toggle('is-open');
+    work.querySelector('.work__toggle').setAttribute('aria-expanded', String(isOpen));
+  }
+
+  works.forEach(function (work) {
+    work.querySelector('.work__toggle').addEventListener('click', function () {
+      open(work, true);
+    });
+  });
+
+  // Arriving from the home carousel: open the linked project.
+  function openFromHash() {
+    var id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id) return;
+    var work = document.getElementById(id);
+    if (!work || !work.classList.contains('work')) return;
+    works.forEach(function (other) {
+      other.classList.remove('is-open');
+      other.querySelector('.work__toggle').setAttribute('aria-expanded', 'false');
+    });
+    work.classList.add('is-open');
+    work.querySelector('.work__toggle').setAttribute('aria-expanded', 'true');
+    work.scrollIntoView({ block: 'center' });
+  }
+
+  window.addEventListener('hashchange', openFromHash);
+  openFromHash();
+}());
+</script>
+
+<!-- Contact bar — same block on every page; edit them together. -->
+<footer class="contact">
+  <a href="mailto:karensiena@gmail.com">karensiena@gmail.com</a>
+  <a href="https://www.linkedin.com/in/siena-villancio-wolter/" target="_blank" rel="noopener">linkedin</a>
+  <a href="https://github.com/kvillancio" target="_blank" rel="noopener">github</a>
+  <a href="siena_villancio_resume_website.pdf" target="_blank" rel="noopener">resume / cv</a>
+</footer>
+
+</body>
+</html>
