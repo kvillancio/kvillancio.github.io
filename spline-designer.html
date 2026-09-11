@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Siena Villancio-Wolter</title>
+<title>Spline Generator - Siena Villancio-Wolter</title>
 <link rel="stylesheet" href="https://fontlibrary.org/face/anka-coder" type="text/css">
 <!-- Site chrome: nav + contact bar come from the shared stylesheet. -->
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="tour.css">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -23,27 +24,27 @@
   .tool-wrap {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px 40px 140px 40px;
+    /* --tour-dock: room for the tour card when it's docked to the bottom. */
+    padding: 20px 40px calc(140px + var(--tour-dock, 0px)) 40px;
   }
 
+  .tool-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 18px;
+    margin-bottom: 20px;
+  }
   .tool-heading {
     font-size: 24px;
     font-weight: 700;
     letter-spacing: 0.3px;
-    margin-bottom: 6px;
-  }
-  .tool-subheading {
-    font-size: 18px;
-    line-height: 1.55;
-    color: #444444;
-    letter-spacing: 0.2px;
-    max-width: 900px;
-    margin-bottom: 20px;
   }
 
   /* Tabs */
   .tab-bar {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 18px;
   }
@@ -76,7 +77,7 @@
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
-    margin-bottom: 10px;
+    margin-top: 10px;
   }
   .tool-btn {
     font-family: inherit;
@@ -179,7 +180,7 @@
   }
 
   @media (max-width: 820px) {
-    .tool-wrap { padding: 20px 24px 160px 24px; }
+    .tool-wrap { padding: 20px 24px calc(160px + var(--tour-dock, 0px)) 24px; }
     .designer-grid { flex-direction: column; }
     .params-col { flex-basis: auto; width: 100%; max-width: 720px; }
     .params-box { max-height: none; }
@@ -196,12 +197,9 @@
   </nav>
 
   <div class="tool-wrap">
-    <div class="tool-heading">ANKLE SPLINE DESIGNER</div>
-    <div class="tool-subheading">
-      Design the torque profile an ankle exoskeleton controller commands over a gait cycle.
-      Drag the 12 nodes or type their values, preview the PCHIP curve the firmware will build,
-      then export a <code>spline.csv</code>. The <strong>SplineAlt</strong> tab generates the same
-      kind of curve from shape parameters &mdash; peak torque, timing, and rise / dwell / fall.
+    <div class="tool-title-row">
+      <h1 class="tool-heading">EXOSKELETON SPLINE GENERATOR</h1>
+      <button class="tool-btn tour-launch" id="tourStart" type="button">Tutorial</button>
     </div>
 
     <div class="tab-bar">
@@ -213,14 +211,14 @@
     <section id="splinePanel">
       <div class="designer-grid">
         <div class="plot-col">
+          <div class="plot-box" id="splinePlotBox">
+            <canvas class="plot" id="splineCanvas" width="700" height="420"></canvas>
+          </div>
           <div class="plot-toolbar">
             <button class="tool-btn" id="splineOpen" type="button">Open&hellip;</button>
             <button class="tool-btn" id="splineSave" type="button">Save As&hellip;</button>
             <button class="tool-btn" id="splineReset" type="button">Reset</button>
             <input type="file" id="splineFile" accept=".csv" hidden>
-          </div>
-          <div class="plot-box">
-            <canvas class="plot" id="splineCanvas" width="700" height="420"></canvas>
           </div>
           <div class="plot-status" id="splineStatus"></div>
         </div>
@@ -232,8 +230,6 @@
               <span class="grid-head">X (% gait)</span>
               <span class="grid-head">Y (Nm)</span>
             </div>
-            <h3>Extra Parameters</h3>
-            <div class="sa-grid" id="splineExtraGrid"></div>
           </div>
         </div>
       </div>
@@ -243,24 +239,20 @@
     <section id="splineAltPanel" hidden>
       <div class="designer-grid">
         <div class="plot-col">
+          <div class="plot-box">
+            <canvas class="plot" id="splineAltCanvas" width="700" height="420"></canvas>
+          </div>
           <div class="plot-toolbar">
             <button class="tool-btn" id="saOpen" type="button">Open&hellip;</button>
             <button class="tool-btn" id="saSave" type="button">Save As&hellip;</button>
             <button class="tool-btn" id="saReset" type="button">Reset</button>
             <input type="file" id="saFile" accept=".csv" hidden>
           </div>
-          <div class="plot-box">
-            <canvas class="plot" id="splineAltCanvas" width="700" height="420"></canvas>
-          </div>
           <div class="plot-status" id="splineAltStatus"></div>
         </div>
         <div class="params-col">
           <div class="params-box">
             <div id="saParams"></div>
-            <div class="params-note">
-              Torque magnitudes are entered positive; plantarflexion is applied negative
-              internally. The firmware clamps the feed-forward command to &plusmn;15&nbsp;Nm.
-            </div>
           </div>
         </div>
       </div>
@@ -275,6 +267,7 @@
     <a href="siena_villancio_resume_website.pdf" target="_blank" rel="noopener">resume / cv</a>
   </footer>
 
+  <script src="tour.js"></script>
   <script>
   "use strict";
 
@@ -477,6 +470,80 @@
     return { ys: tSamples.map((t) => saPchipInterpolate(xn, yn, wrapMod100(t))), valid: true };
   }
 
+  /* ---------- SplineAlt node dragging ---------- */
+
+  // Parameter indices per lobe; sign is the direction the magnitude is applied.
+  const SA_LOBES = [
+    { sign: -1, nm: SA.PLANTAR_NM, pk: SA.PLANTAR_PK, rise: SA.PLANTAR_RISE, dwell: SA.PLANTAR_DWELL, fall: SA.PLANTAR_FALL },
+    { sign: 1, nm: SA.DORSI_NM, pk: SA.DORSI_PK, rise: SA.DORSI_RISE, dwell: SA.DORSI_DWELL, fall: SA.DORSI_FALL },
+  ];
+  const SA_MIN_GAP = 1.0;   // % gait kept between a lobe's nodes while dragging
+  const SA_MAX_SPAN = 99.0; // a lobe spanning a full cycle would collide with itself
+
+  // Every node each active lobe emits (same set as buildRawLobeNodes), tagged with
+  // its lobe and role. raw is the unwrapped position; x is where it is drawn.
+  // Unlike interiorNodes this is returned for a degenerate profile too, so
+  // colliding nodes can still be grabbed and dragged apart.
+  function saHandles(p) {
+    const scale = p[SA.TORQUE_SCALE] / 100.0;
+    const out = [];
+    SA_LOBES.forEach((L, lobe) => {
+      const amp = L.sign * p[L.nm] * scale;
+      if (amp === 0.0) return;
+      const pk = p[L.pk], dwell = p[L.dwell];
+      out.push({ lobe, role: "start", raw: pk - p[L.rise], y: 0.0 });
+      out.push({ lobe, role: "peak", raw: pk, y: amp });
+      if (dwell > 0.0) out.push({ lobe, role: "plateau", raw: pk + dwell, y: amp });
+      out.push({ lobe, role: "end", raw: pk + dwell + p[L.fall], y: 0.0 });
+    });
+    out.forEach((h) => { h.x = wrapMod100(h.raw); });
+    return out;
+  }
+
+  // Move one lobe node to the pointer (plot units), rewriting that lobe's shape
+  // parameters so every other node stays put: the start node sets rise, the end
+  // node sets fall, and the peak / plateau nodes trade time between their
+  // neighbours and set the peak torque. X snaps to whole % gait and torque to
+  // whole Nm, like the node tab.
+  function saDragHandle(p, lobe, role, px, py) {
+    const L = SA_LOBES[lobe];
+    const pk = p[L.pk], dwell = p[L.dwell];
+    const start = pk - p[L.rise], plat = pk + dwell, end = plat + p[L.fall];
+    const cur = { start, peak: pk, plateau: plat, end }[role];
+    // Lobes may wrap past the 0/100 seam: use the periodic copy of the pointer
+    // nearest the node's current position so it drags continuously across it.
+    const snapped = Math.round(px);
+    const x = snapped + 100.0 * Math.round((cur - snapped) / 100.0);
+    const within = (lo, hi) => (lo <= hi ? Math.max(lo, Math.min(x, hi)) : null);
+    const set = (idx, v) => { p[idx] = clampParam(idx, v); };
+
+    let v;
+    if (role === "start") {
+      v = within(end - SA_MAX_SPAN, pk - SA_MIN_GAP);
+      if (v !== null) set(L.rise, pk - v);
+    } else if (role === "peak") {
+      const next = dwell > 0.0 ? plat : end;
+      v = within(Math.max(start + SA_MIN_GAP, 0.0), Math.min(next - SA_MIN_GAP, 100.0));
+      if (v !== null) {
+        set(L.pk, v);
+        set(L.rise, v - start);
+        if (dwell > 0.0) set(L.dwell, plat - v); else set(L.fall, end - v);
+      }
+    } else if (role === "plateau") {
+      v = within(pk + SA_MIN_GAP, end - SA_MIN_GAP);
+      if (v !== null) { set(L.dwell, v - pk); set(L.fall, end - v); }
+    } else {
+      v = within(plat + SA_MIN_GAP, start + SA_MAX_SPAN);
+      if (v !== null) set(L.fall, v - plat);
+    }
+
+    if (role === "peak" || role === "plateau") {
+      const scale = p[SA.TORQUE_SCALE] / 100.0;
+      // Floor of 1 Nm: a zero magnitude disables the lobe and its nodes would vanish mid-drag.
+      if (scale > 0.0) set(L.nm, Math.max(1.0, Math.round((L.sign * py) / scale)));
+    }
+  }
+
   /* ============================================================
      CSV load / save
      ============================================================ */
@@ -522,7 +589,6 @@
     ["", "Parameter list for the  spline controller"],
     ["", "Parameter order:"],
   ];
-  const SPLINE_EXTRA_LABELS = ["sim %gait (1=yes)", "1=%gait 0=%stance", "PID Flag", "P Gain", "I Gain", "D Gain"];
   const SPLINE_CSV_NAMES = (() => {
     const names = [];
     for (let i = 1; i <= 12; i++) names.push("Node" + i + "_x", "Node" + i + "_y");
@@ -613,8 +679,10 @@
      State (ports NodeState / SplineAltState clamping rules)
      ============================================================ */
 
-  const DEFAULT_X = [0.0, 5.0, 10.0, 20.0, 20.1, 20.2, 20.3, 20.4, 20.5, 20.6, 20.7, 20.8];
-  const DEFAULT_Y = [0.0, -8.0, -12.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+  // Nodes spread evenly across the gait cycle (on the whole-% grid dragging
+  // snaps to) so each one is easy to grab; nothing starts stacked on a neighbour.
+  const DEFAULT_X = [0.0, 9.0, 18.0, 27.0, 36.0, 45.0, 55.0, 64.0, 73.0, 82.0, 91.0, 100.0];
+  const DEFAULT_Y = [0.0, 0.0, 0.0, -2.0, -6.0, -12.0, -8.0, 0.0, 0.0, 0.0, 0.0, 0.0];
   const DEFAULT_EXTRA = [0.0, 1.0, 1.0, 6.0, 0.0, 0.03];
   const X_EPSILON = 0.1; // % gait -- minimum gap enforced between adjacent node x-values
 
@@ -641,19 +709,10 @@
     return Array.from({ length: n }, (_, i) => a + (i * (b - a)) / (n - 1));
   }
 
-  // Port of _update_y_range: fit the values, padded and centred so negative
-  // torque shows as readily as positive. emptyMode picks the fallback range.
-  function yRange(values, minSpan, emptyMode) {
-    if (!values.length) {
-      return emptyMode === "bounds" ? NODE_Y_BOUNDS.slice() : [-minSpan, minSpan];
-    }
-    const lo = Math.min(...values), hi = Math.max(...values);
-    const span = Math.max(hi - lo, minSpan);
-    const pad = span * 0.1;
-    const mid = (lo + hi) / 2.0;
-    const half = span / 2.0 + pad;
-    return [mid - half, mid + half];
-  }
+  // Fixed torque axis (Nm) for both plots, so the view doesn't rescale under the
+  // pointer while dragging. Dragged nodes are held inside it.
+  const TORQUE_AXIS = [-30.0, 20.0];
+  const TORQUE_TICK_STEP = 5.0;
 
   function formatTick(v) {
     if (Math.abs(v) < 1e-9) return "0";
@@ -662,7 +721,12 @@
 
   const FONT_SM = '11px -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif';
   const FONT_MD = '12px -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif';
+  const FONT_XS = '10px -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif';
   const CURVE_COLOR = "#0078D4";
+  const Y_TITLE = "Torque (Nm)";
+  const DORSI_HINT = "dorsiflexion →";
+  const PLANTAR_HINT = "← plantarflexion";
+  const HINT_GAP = 10; // px between the torque title and each direction hint
 
   function drawPlot(canvas, opts) {
     const cw = canvas.clientWidth;
@@ -687,7 +751,7 @@
     const yToPx = (y) => M.top + ((ymax - y) / (ymax - ymin)) * plotH;
     const pxToX = (px) => xmin + ((px - M.left) / plotW) * (xmax - xmin);
     const pxToY = (px) => ymax - ((px - M.top) / plotH) * (ymax - ymin);
-    canvas._tx = { xToPx, yToPx, pxToX, pxToY };
+    canvas._tx = { xToPx, yToPx, pxToX, pxToY, M, plotW, plotH };
 
     // grid + tick labels
     ctx.strokeStyle = "#e6e6e6";
@@ -703,9 +767,7 @@
     }
     ctx.textAlign = "right";
     ctx.textBaseline = "middle";
-    const yTicks = 6;
-    for (let i = 0; i <= yTicks; i++) {
-      const yv = ymin + ((ymax - ymin) * i) / yTicks;
+    for (let yv = Math.ceil(ymin / TORQUE_TICK_STEP) * TORQUE_TICK_STEP; yv <= ymax; yv += TORQUE_TICK_STEP) {
       const py = yToPx(yv);
       ctx.beginPath(); ctx.moveTo(M.left, py); ctx.lineTo(M.left + plotW, py); ctx.stroke();
       ctx.fillText(formatTick(yv), M.left - 8, py);
@@ -728,7 +790,24 @@
     ctx.translate(13, M.top + plotH / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.textBaseline = "top";
-    ctx.fillText("Torque (Nm)", 0, 0);
+    ctx.fillText(Y_TITLE, 0, 0);
+    const titleHalf = ctx.measureText(Y_TITLE).width / 2;
+
+    // Direction hints either side of the torque title: positive torque is
+    // dorsiflexion (up), negative is plantarflexion (down). The rotated text reads
+    // bottom-to-top, so the plantarflexion arrow leads in order to point down.
+    // When the plot is too short to fit them beside the title (narrow screens),
+    // they move to their own column just left of it, starting from the centre.
+    ctx.font = FONT_XS;
+    ctx.fillStyle = "#8a8a8a";
+    const hintW = Math.max(ctx.measureText(DORSI_HINT).width, ctx.measureText(PLANTAR_HINT).width);
+    const inline = titleHalf + HINT_GAP + hintW <= plotH / 2;
+    const offset = inline ? titleHalf + HINT_GAP : HINT_GAP / 2;
+    if (!inline) ctx.translate(0, -12);
+    ctx.textAlign = "left";
+    ctx.fillText(DORSI_HINT, offset, 1);
+    ctx.textAlign = "right";
+    ctx.fillText(PLANTAR_HINT, -offset, 1);
     ctx.restore();
 
     // curve + nodes, clipped to the plot area
@@ -803,6 +882,47 @@
     node.classList.toggle("error", !!isError);
   }
 
+  // Index of the point ({x, y} in plot units) nearest the pointer within the grab
+  // radius, or -1. Also returns the pointer position converted to plot units.
+  const GRAB_RADIUS_PX = 15;
+  function hitTest(canvas, points, e) {
+    const tx = canvas._tx;
+    if (!tx) return { index: -1 };
+    const r = canvas.getBoundingClientRect();
+    const mx = e.clientX - r.left, my = e.clientY - r.top;
+    let index = -1, bestD = GRAB_RADIUS_PX;
+    points.forEach((pt, i) => {
+      const d = Math.hypot(tx.xToPx(pt.x) - mx, tx.yToPx(pt.y) - my);
+      if (d < bestD) { bestD = d; index = i; }
+    });
+    return { index, x: tx.pxToX(mx), y: tx.pxToY(my) };
+  }
+
+  // Wires pointer dragging onto a plot canvas. getPoints() returns the grabbable
+  // points; onGrab(index) returns a drag token; onDrag(token, x, y) gets plot units.
+  function makeDraggable(canvas, getPoints, onGrab, onDrag) {
+    let token = null;
+    canvas.addEventListener("pointerdown", (e) => {
+      const { index } = hitTest(canvas, getPoints(), e);
+      if (index < 0) return;
+      token = onGrab(index);
+      canvas.setPointerCapture(e.pointerId);
+      canvas.style.cursor = "grabbing";
+      e.preventDefault();
+    });
+    canvas.addEventListener("pointermove", (e) => {
+      if (token === null) {
+        canvas.style.cursor = hitTest(canvas, getPoints(), e).index >= 0 ? "grab" : "";
+        return;
+      }
+      const { x, y } = hitTest(canvas, [], e);
+      onDrag(token, x, Math.max(TORQUE_AXIS[0], Math.min(y, TORQUE_AXIS[1])));
+    });
+    const end = () => { token = null; canvas.style.cursor = ""; };
+    canvas.addEventListener("pointerup", end);
+    canvas.addEventListener("pointercancel", end);
+  }
+
   /* ============================================================
      Spline (12 nodes) tab
      ============================================================ */
@@ -810,9 +930,10 @@
   const splineCanvas = document.getElementById("splineCanvas");
   const splineStatus = document.getElementById("splineStatus");
   const splineNodeGrid = document.getElementById("splineNodeGrid");
-  const splineExtraGrid = document.getElementById("splineExtraGrid");
 
-  const xInputs = [], yInputs = [], extraInputs = [];
+  // The 6 simulation / PID values (splineState.extra) have no inputs: they keep their
+  // defaults or whatever an opened CSV held, and are written back out on save.
+  const xInputs = [], yInputs = [];
 
   for (let i = 0; i < 12; i++) {
     splineNodeGrid.append(el("span", "grid-label", "Node " + (i + 1)));
@@ -834,27 +955,11 @@
     });
   }
 
-  SPLINE_EXTRA_LABELS.forEach((label, i) => {
-    splineExtraGrid.append(el("span", "grid-label", label));
-    const inp = numInput(-1000, 1000, 0.001);
-    extraInputs.push(inp);
-    splineExtraGrid.append(inp);
-    inp.addEventListener("change", () => {
-      if (updating) return;
-      const v = parseFloat(inp.value);
-      if (Number.isFinite(v)) splineState.extra[i] = v; // matches _on_extra_spin_changed: no clamp
-      renderSpline();
-    });
-  });
-
   function syncSplineInputs() {
     updating = true;
     for (let i = 0; i < 12; i++) {
       xInputs[i].value = fmtNum(splineState.x[i], 2);
       yInputs[i].value = fmtNum(splineState.y[i], 2);
-    }
-    for (let i = 0; i < extraInputs.length; i++) {
-      extraInputs[i].value = fmtNum(splineState.extra[i], 3);
     }
     updating = false;
   }
@@ -863,43 +968,26 @@
     syncSplineInputs();
     const xs = linspace(NODE_X_BOUNDS[0], NODE_X_BOUNDS[1], 200);
     const { ys, valid } = pchipCurve(splineState.x, splineState.y, xs);
-    const [ymin, ymax] = yRange(ys.concat(splineState.y), 4.0, "bounds");
+    const [ymin, ymax] = TORQUE_AXIS;
     drawPlot(splineCanvas, {
       xs, ys, ymin, ymax, draggable: true,
       nodes: splineState.x.map((x, i) => ({ x, y: splineState.y[i], label: String(i + 1) })),
     });
     setStatus(splineStatus, valid ? "" : "Invalid node order (should be unreachable via this UI)", !valid);
+    splineTour.notify(); // re-checks the tour's current step; no-op while it's closed
   }
 
   // Dragging snaps to whole % gait / Nm; typing into the inputs still accepts decimals.
-  let splineDragIdx = -1;
-  splineCanvas.addEventListener("pointerdown", (e) => {
-    const tx = splineCanvas._tx;
-    if (!tx) return;
-    const r = splineCanvas.getBoundingClientRect();
-    const mx = e.clientX - r.left, my = e.clientY - r.top;
-    let best = -1, bestD = 15;
-    for (let i = 0; i < 12; i++) {
-      const d = Math.hypot(tx.xToPx(splineState.x[i]) - mx, tx.yToPx(splineState.y[i]) - my);
-      if (d < bestD) { bestD = d; best = i; }
+  makeDraggable(
+    splineCanvas,
+    () => splineState.x.map((x, i) => ({ x, y: splineState.y[i] })),
+    (index) => index,
+    (index, x, y) => {
+      splineSetX(index, Math.round(x));
+      splineSetY(index, Math.round(y));
+      renderSpline();
     }
-    if (best >= 0) {
-      splineDragIdx = best;
-      splineCanvas.setPointerCapture(e.pointerId);
-      e.preventDefault();
-    }
-  });
-  splineCanvas.addEventListener("pointermove", (e) => {
-    if (splineDragIdx < 0) return;
-    const tx = splineCanvas._tx;
-    const r = splineCanvas.getBoundingClientRect();
-    splineSetX(splineDragIdx, Math.round(tx.pxToX(e.clientX - r.left)));
-    splineSetY(splineDragIdx, Math.round(tx.pxToY(e.clientY - r.top)));
-    renderSpline();
-  });
-  const endSplineDrag = () => { splineDragIdx = -1; };
-  splineCanvas.addEventListener("pointerup", endSplineDrag);
-  splineCanvas.addEventListener("pointercancel", endSplineDrag);
+  );
 
   document.getElementById("splineOpen").addEventListener("click", () => {
     document.getElementById("splineFile").click();
@@ -930,7 +1018,6 @@
     splineState.y = DEFAULT_Y.slice();
     splineState.extra = DEFAULT_EXTRA.slice();
     renderSpline();
-    setStatus(splineStatus, "Reset to defaults");
   });
 
   /* ============================================================
@@ -960,14 +1047,7 @@
     ["Global", [
       ["Torque scale (%)", 10, 1, 5],
     ]],
-    ["Simulation & PID", [
-      ["Simulate %gait (1 = yes)", 11, 0, 1],
-      ["1 = %gait, 0 = %stance", 12, 0, 1],
-      ["PID flag (1 = on)", 13, 0, 1],
-      ["P Gain", 14, 3, 0.1],
-      ["I Gain", 15, 3, 0.1],
-      ["D Gain", 16, 3, 0.001],
-    ]],
+    // Simulation / PID params (11-16) have no inputs; they round-trip through open / save.
   ];
 
   const saInputs = new Array(SA_NUM_PARAMS);
@@ -996,7 +1076,7 @@
   function syncSplineAltInputs() {
     updating = true;
     for (let i = 0; i < SA_NUM_PARAMS; i++) {
-      saInputs[i].value = fmtNum(splineAltState.params[i], saDecimals[i]);
+      if (saInputs[i]) saInputs[i].value = fmtNum(splineAltState.params[i], saDecimals[i]);
     }
     updating = false;
   }
@@ -1005,21 +1085,26 @@
     syncSplineAltInputs();
     const xs = linspace(NODE_X_BOUNDS[0], NODE_X_BOUNDS[1], 400);
     const { ys, valid } = saSampleCurve(splineAltState.params, xs);
-    const [nx, ny] = interiorNodes(splineAltState.params);
-    const [ymin, ymax] = yRange(ys.concat(ny), 4.0, "span");
-    drawPlot(splineAltCanvas, {
-      xs, ys, ymin, ymax, draggable: false,
-      nodes: nx.map((x, i) => ({ x, y: ny[i] })),
-    });
-    if (valid) {
-      setStatus(splineAltStatus,
-        "Built " + nx.length + " nodes (" + (nx.length + 4) + " with the periodic wrap-around copies).");
-    } else {
-      setStatus(splineAltStatus,
-        "Degenerate profile — the firmware would command zero torque. Every active lobe needs " +
-        "rise > 0 and fall > 0, and the two lobes must not share a node position.", true);
-    }
+    const [nx] = interiorNodes(splineAltState.params);
+    const handles = saHandles(splineAltState.params);
+    const [ymin, ymax] = TORQUE_AXIS;
+    drawPlot(splineAltCanvas, { xs, ys, ymin, ymax, draggable: true, nodes: handles });
   }
+
+  // Handles are identified by (lobe, role) rather than index: the drawn order
+  // re-sorts as nodes wrap across the 0/100 seam or pass the other lobe's nodes.
+  makeDraggable(
+    splineAltCanvas,
+    () => saHandles(splineAltState.params),
+    (index) => {
+      const h = saHandles(splineAltState.params)[index];
+      return { lobe: h.lobe, role: h.role };
+    },
+    (tok, x, y) => {
+      saDragHandle(splineAltState.params, tok.lobe, tok.role, x, y);
+      renderSplineAlt();
+    }
+  );
 
   document.getElementById("saOpen").addEventListener("click", () => {
     document.getElementById("saFile").click();
@@ -1078,6 +1163,138 @@
     resizeTimer = setTimeout(() => {
       if (activeTab === "spline") renderSpline(); else renderSplineAlt();
     }, 100);
+  });
+
+  /* ============================================================
+     Guided tour (engine and overlay: tour.js / tour.css)
+     Optional walkthrough of the Spline tab.
+     ============================================================ */
+
+  const TOUR_PULSE_NODE = 5;  // node 6 -- the low point of the default profile
+  const { unionRect, topCentre } = SiteTour;
+  const splinePlotBox = document.getElementById("splinePlotBox");
+  const splineParamsBox = splineNodeGrid.closest(".params-box");
+
+  // Spline canvas geometry in viewport px, for aiming the axis arrows.
+  function plotGeom() {
+    const r = splineCanvas.getBoundingClientRect();
+    const { M, plotW, plotH } = splineCanvas._tx;
+    return { r, M, plotW, plotH };
+  }
+
+  const TOUR_STEPS = [
+    {
+      title: "What is a torque spline?",
+      body: "The blue curve is the torque command that we want to send to the exoskeleton motors during each step the user takes. This torque can apply assistance or resistance while walking.",
+      target: () => splinePlotBox.getBoundingClientRect(),
+      cardSides: ["right", "left"],
+      notes: [
+        {
+          eyebrow: "Y-axis",
+          title: "Torque (Nm)",
+          text: "How much torque the motor applies. Positive torque moves in the direction of dorsiflexion (toes up), negative torque moves in the direction of plantarflexion (toes down).",
+          sides: ["left", "top"],
+          maxWidth: 480, // wide and short, so it fits above the plot instead of hanging into it
+          // From beside the plot, aim at the axis title; from above, at the top of the axis line.
+          anchor(side) {
+            const g = plotGeom();
+            return side === "left"
+              ? { x: g.r.left + 2, y: g.r.top + g.M.top + g.plotH / 2 }
+              : { x: g.r.left + g.M.left, y: g.r.top + g.M.top + 4 };
+          },
+        },
+        {
+          eyebrow: "X-axis",
+          title: "Percent gait cycle (%)",
+          text: "One complete stride, from one foot strike (0%) to the next foot strike (100%). This can be estimated by force sensors placed under the heel or ball of the foot, an IMU on the shank, etc.",
+          sides: ["bottom"],
+          maxWidth: 480,
+          anchor() {
+            const g = plotGeom();
+            return { x: g.r.left + g.M.left + g.plotW / 2, y: g.r.bottom - 2 };
+          },
+        },
+      ],
+      tasks: [{ key: "drag", text: "Try it: drag a node to a new value." }],
+      // Hint and doneHint are kept about the same length so the card doesn't jump mid-drag.,
+      // Ring node 6 until a node has been dragged.
+      pulseAt() {
+        const r = splineCanvas.getBoundingClientRect(), tx = splineCanvas._tx;
+        return [{ x: r.left + tx.xToPx(splineState.x[TOUR_PULSE_NODE]), y: r.top + tx.yToPx(splineState.y[TOUR_PULSE_NODE]) }];
+      },
+      // The inputs are dimmed and unclickable on this step, so any moved node was dragged.
+      check(snap, done) {
+        if (splineState.x.some((x, i) => x !== snap.x[i] || splineState.y[i] !== snap.y[i])) done.add("drag");
+      },
+    },
+    {
+      title: "Typing exact values",
+      body: "The Nodes panel lists every node's x and y values. Type here to edit nodes to specific values. Note: the x-value of a node cannot exceed past its neighboring nodes.",
+      target: () => splineParamsBox.getBoundingClientRect(),
+      cardSides: ["left", "right"],
+      notes: [],
+      tasks: [
+        { key: "x", text: "Type a new X value for a node" },
+        { key: "y", text: "Type a new Y value for a node" },
+      ],
+      onEnter() { splineParamsBox.scrollTop = 0; },
+      check(snap, done) {
+        if (splineState.x.some((x, i) => x !== snap.x[i])) done.add("x");
+        if (splineState.y.some((y, i) => y !== snap.y[i])) done.add("y");
+      },
+    },
+    {
+      title: "Buttons",
+      body: "What each one does:",
+      // From the tab row above the plot down to the file buttons below it, so the plot is lit
+      // too. Look-only: switching tabs or resetting mid-tour would pull the page out from
+      // under the spotlight.
+      // The plot box is included so the lit area spans the full plot width rather than
+      // stopping at the narrower tab and button rows and cutting the plot in half.
+      target: () => unionRect([tabSpline, tabSplineAlt, splinePlotBox, document.getElementById("splineOpen"),
+        document.getElementById("splineReset")], 12),
+      interactive: false,
+      cardSides: ["right", "left"],
+      notes: [],
+      legend: [
+        {
+          term: "Spline / SplineAlt",
+          text: "Two different ways to parameterize the spline.",
+          // Centred on the gap between the two tabs so it reads as covering both.
+          badgeAt() {
+            const a = tabSpline.getBoundingClientRect(), b = tabSplineAlt.getBoundingClientRect();
+            return { x: (a.right + b.left) / 2, y: Math.min(a.top, b.top) };
+          },
+        },
+        {
+          term: "Open…",
+          text: "Load the .csv file of a previous spline.",
+          badgeAt: () => topCentre(document.getElementById("splineOpen")),
+        },
+        {
+          term: "Save As…",
+          text: "Download the current spline as a .csv file.",
+          badgeAt: () => topCentre(document.getElementById("splineSave")),
+        },
+        {
+          term: "Reset",
+          text: "Put every node back to the default profile, including the ones you moved in this tutorial.",
+          badgeAt: () => topCentre(document.getElementById("splineReset")),
+        },
+      ],
+      tasks: [],
+      hint: "",
+      doneHint: "",
+      check() {},
+    },
+  ];
+
+  const splineTour = SiteTour.create({
+    steps: TOUR_STEPS,
+    launchButton: document.getElementById("tourStart"),
+    seenKey: "splineDesignerTourSeen",
+    snapshot: () => ({ x: splineState.x.slice(), y: splineState.y.slice() }),
+    onOpen: () => setTab("spline"), // renders before the tour is active, so no task is ticked by it
   });
 
   renderSpline();
