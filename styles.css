@@ -309,6 +309,74 @@ a   { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transp
   }
 }
 
+/* A description with media hung off its right side (a clip, a photo).
+   The text keeps the full description width; the media row sits past
+   it, outside the row budget.
+   Height: the description is stretched to the item's height minus the
+   next item's overlap plus a little air, and the media fill that height,
+   so they end above the next item's photo. 40px = --stagger (110) -
+   .work margin-bottom (96) + 26 of air.
+   Width: capped at what is left of the row (assuming the widest photo)
+   plus the page margin past it, less 24px of air from the window edge;
+   the media shrink together to fit, keeping their proportions. */
+.work__desc--media { bottom: 40px; }
+.work__media {
+  position: absolute;
+  top: 0;
+  left: calc(100% + var(--work-gap));
+  height: 100%;
+  width: max-content;
+  max-width: calc(100cqw - var(--work-edge) - var(--work-photo-w)
+                  - 2 * var(--work-gap) - var(--work-desc-w)
+                  + max(0px, (100vw - 100cqw) / 2 - 24px));
+  display: flex;
+  align-items: flex-start;
+  gap: var(--work-gap);
+}
+.work__media > * {
+  display: block;
+  min-width: 0;
+  width: auto;
+  height: auto;
+  max-height: 100%;
+}
+
+/* Mirrored on the right-hand items: media hang off the left of the text.
+   The description runs the item's full height (the next item starts
+   below it), and the media start 70px down so they clear the caption of
+   the item above, which ends --stagger - margin-bottom (14px) into this
+   one. The left page margin holds the wordmark, so only what is past
+   the gutter counts as extra room. */
+.work:nth-child(even) .work__desc--media { bottom: 0; }
+.work:nth-child(even) .work__media {
+  top: 70px;
+  left: auto;
+  right: calc(100% + var(--work-gap));
+  height: calc(100% - 70px);
+  max-width: calc(100cqw - var(--work-edge) - var(--work-photo-w)
+                  - 2 * var(--work-gap) - var(--work-desc-w)
+                  + max(0px, (100vw - 100cqw) / 2 - var(--gutter) - 24px));
+}
+
+/* Smaller media: same placement, capped at a thumbnail height. */
+.work__media--small > * { max-height: min(100%, 220px); }
+
+/* A photo below a description's text, inside its width. */
+.work__desc-img {
+  width: 60%;
+  margin-top: 20px;
+}
+
+/* Links inside a description: underlined so they read as clickable
+   (the global `a` rule strips decoration). */
+.work__desc a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.work__desc a:hover,
+.work__desc a:focus-visible { opacity: .6; }
+
 /* Tech landing: the three categories side by side, level with each
    other — no stagger here, the row is the whole page. */
 
@@ -566,6 +634,20 @@ a   { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transp
   }
 
   .work.is-open .work__desc { display: block; }
+
+  /* Media drop below the text on a phone, stacked. */
+  .work:nth-child(odd) .work__media,
+  .work:nth-child(even) .work__media {
+    position: static;
+    width: auto;
+    max-width: none;
+    height: auto;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .work__media video { width: 60%; }
+  .work__media img   { width: 100%; }
 
   .collection--low { margin-top: 0; }
 
